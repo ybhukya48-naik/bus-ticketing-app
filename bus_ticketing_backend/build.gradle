@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'application'
+}
+
+group = 'com.busticketing'
+version = '0.0.1-SNAPSHOT'
+description = 'Backend for AI-based conductor-less electrical bus tickets system'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+
+	// 🌐 Web (REST APIs)
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// 🗄️ JPA + Hibernate
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// 🔐 Spring Security
+	implementation('org.springframework.boot:spring-boot-starter-security')
+
+	// 🔑 JWT Authentication
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+
+	implementation 'com.razorpay:razorpay-java:1.4.7'
+	implementation 'com.stripe:stripe-java:20.59.0'
+	implementation 'com.google.code.gson:gson:2.10.1'
+
+
+
+	// 🐬 MySQL Driver
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// ✨ Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// 🧪 Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+application {
+	mainClass = 'com.busticketing.busticketingbackend.BusTicketingBackendApplication'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+

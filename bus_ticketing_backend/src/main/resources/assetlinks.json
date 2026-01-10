@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.busticketing.app",
+      "sha256_cert_fingerprints": ["10:8D:19:D0:62:D2:00:83:1F:74:90:7C:AE:1E:78:4F:08:55:FC:00:76:8F:D0:E1:E0:CC:ED:EB:78:A3:90:3F"]
+    }
+  }
+]
