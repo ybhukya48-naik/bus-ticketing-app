@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:bus_ticketing_app/models/bus.dart';
 import 'package:intl/intl.dart';
 
+import 'package:bus_ticketing_app/services/api_config.dart';
+
 class BookingCreationService {
-  final String baseUrl = 'http://localhost:8080/api/bookings';
+  final String baseUrl = '${ApiConfig.baseUrl}/bookings';
 
   Future<String> createBooking(Bus bus, int numberOfSeats, String username, String token) async {
     final String bookingDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());

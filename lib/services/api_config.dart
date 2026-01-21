@@ -1,7 +1,11 @@
 class ApiConfig {
+  // IMPORTANT: For "without same WiFi" and "permanent" access:
+  // 1. Deploy your backend to Render.com
+  // 2. Copy your Render URL (e.g., https://bus-app.onrender.com/api)
+  // 3. Paste it below as the 'defaultValue'
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8080/api',
+    defaultValue: 'http://192.168.66.30:8080/api', // Current Local IP
   );
 
   // You can also use this for automatic platform detection if needed:

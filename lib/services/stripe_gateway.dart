@@ -4,6 +4,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:bus_ticketing_app/services/payment_gateway.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:bus_ticketing_app/services/api_config.dart';
+
 class StripeGateway implements PaymentGateway {
   final BuildContext context;
 
@@ -17,7 +19,7 @@ class StripeGateway implements PaymentGateway {
   @override
   Future<void>  startPayment(double amount, String bookingId) async {
     try {
-      final url = Uri.parse('http://localhost:8080/api/stripe/create-payment-intent');
+      final url = Uri.parse('${ApiConfig.baseUrl}/stripe/create-payment-intent');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

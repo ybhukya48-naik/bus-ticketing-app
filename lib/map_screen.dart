@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bus_ticketing_app/models/bus.dart';
 import 'package:bus_ticketing_app/models/bus_stop.dart';
+import 'package:bus_ticketing_app/services/api_config.dart';
 
 class MapScreen extends StatefulWidget {
   final Bus? bus;
@@ -37,7 +38,7 @@ class _MapScreenState extends State<MapScreen> {
     });
 
     try {
-      final response = await http.get(Uri.parse('http://localhost:8080/api/stops/batch?ids=$stopsOrder'));
+      final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/stops/batch?ids=$stopsOrder'));
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         List<BusStop> stops = data.map((json) => BusStop.fromJson(json)).toList();

@@ -4,17 +4,25 @@ import 'package:bus_ticketing_app/signup_page.dart';
 import 'package:bus_ticketing_app/forgot_password_page.dart';
 import 'package:bus_ticketing_app/home_screen.dart';
 import 'package:bus_ticketing_app/booking_screen.dart';
-import 'package:bus_ticketing_app/bus_list_screen.dart';
-
 import 'package:bus_ticketing_app/map_screen.dart';
 import 'package:bus_ticketing_app/booking_history_screen.dart';
 import 'package:bus_ticketing_app/user_profile_screen.dart';
 import 'package:bus_ticketing_app/payment_screen.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = 'pk_test_TYu3EQhXgYy01sF23456789'; // TODO: Replace with your actual publishable key
+  
+  try {
+    Stripe.publishableKey = 'pk_test_TYu3EQhXgYy01sF23456789';
+    if (kIsWeb) {
+      await Stripe.instance.applySettings();
+    }
+  } catch (e) {
+    debugPrint('Stripe initialization failed: $e');
+  }
+  
   runApp(const MyApp());
 }
 
@@ -33,7 +41,8 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFF1A237E),
           secondary: const Color(0xFFFFD700), // Gold Accent
           surface: Colors.white,
-          background: const Color(0xFFF5F7FB),
+          surfaceTint: Colors.transparent,
+          onSurface: Colors.black87,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF1A237E),
@@ -63,6 +72,9 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.white,
+          labelStyle: const TextStyle(color: Colors.black54),
+          hintStyle: const TextStyle(color: Colors.black38),
+          prefixIconColor: const Color(0xFF1A237E),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide.none,
@@ -89,34 +101,20 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold, 
             color: Color(0xFF1A237E),
           ),
-          bodyLarge: TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500),
-          bodyMedium: TextStyle(fontSize: 14, color: Colors.black54),
         ),
       ),
-      initialRoute: '/', // Set the initial route
+      initialRoute: '/',
       routes: {
-        '/': (context) => const LoginPage(), // Login page as the default
+        '/': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/forgot_password': (context) => const ForgotPasswordPage(),
-        '/home': (context) => const HomeScreen(), // Home screen route
-        '/booking': (context) => const BookingScreen(), // Booking screen route
-        '/busList': (context) => BusListScreen(), // Bus list screen route
-        '/userProfile': (context) => const UserProfileScreen(), // User profile screen route
-        '/map': (context) => const MapScreen(), // Map screen route
-        '/bookingHistory': (context) => const BookingHistoryScreen(), // Booking history screen route
-      },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/payment') {
-          final args = settings.arguments as String? ?? 'DEMO-123';
-          return MaterialPageRoute(
-            builder: (context) => PaymentScreen(bookingId: args),
-          );
-        }
-        return null;
+        '/home': (context) => const HomeScreen(),
+        '/booking': (context) => const BookingScreen(),
+        '/map': (context) => const MapScreen(),
+        '/bookingHistory': (context) => const BookingHistoryScreen(),
+        '/userProfile': (context) => const UserProfileScreen(),
+        '/payment': (context) => const PaymentScreen(bookingId: 'test_id'),
       },
     );
   }
 }
-
-
-

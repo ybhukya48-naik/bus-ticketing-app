@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:bus_ticketing_app/services/api_config.dart';
 
@@ -76,7 +77,8 @@ class AuthService {
         return response.body;
       }
     } catch (e) {
-      return 'Connection error: Could not reach the server.';
+      debugPrint('Registration error: $e');
+      return 'Connection error: $e';
     }
   }
 }

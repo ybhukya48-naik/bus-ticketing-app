@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.5'
+	id 'org.springframework.boot' version '3.5.9'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'application'
 }
@@ -45,6 +45,9 @@ implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 
 	// 🐬 MySQL Driver
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// 🐘 PostgreSQL Driver (for Render)
+	runtimeOnly 'org.postgresql:postgresql'
 
 	// ✨ Lombok
 	compileOnly 'org.projectlombok:lombok'

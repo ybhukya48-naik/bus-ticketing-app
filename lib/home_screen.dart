@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:bus_ticketing_app/bus_list_screen.dart';
 import 'package:bus_ticketing_app/models/bus_stop.dart';
 import 'package:bus_ticketing_app/services/stop_service.dart';
@@ -11,39 +10,36 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _sourceController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
-  DateTime? _selectedDate;
+  
   List<BusStop> _allStops = [];
   bool _isLoadingStops = true;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _animationController.forward();
     _fetchStops();
   }
 
   Future<void> _fetchStops() async {
+    if (!mounted) return;
+    setState(() => _isLoadingStops = true);
     try {
       final stops = await StopService().fetchStops();
       if (!mounted) return;
       setState(() {
-        _allStops = stops..sort((a, b) => a.stopName.compareTo(b.stopName));
+        _allStops = stops..sort((a, b) {
+          return a.stopName.compareTo(b.stopName);
+        });
         _isLoadingStops = false;
       });
     } catch (e) {
+      debugPrint('Error fetching stops: $e');
       if (!mounted) return;
       setState(() {
+        _allStops = [];
         _isLoadingStops = false;
       });
     }
@@ -51,255 +47,144 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _animationController.dispose();
     _sourceController.dispose();
     _destinationController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  void _searchBuses() {
-    if (_sourceController.text.isEmpty || _destinationController.text.isEmpty || _selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BusListScreen(
-          origin: _sourceController.text,
-          destination: _destinationController.text,
-          date: DateFormat('yyyy-MM-dd').format(_selectedDate!),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      key: const ValueKey('home_scaffold'),
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text(
           'BUS TICKETING',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
         ),
-        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        backgroundColor: const Color(0xFFB71C1C),
+        foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.person_outline, color: Colors.white),
-              onPressed: () => Navigator.pushNamed(context, '/userProfile'),
-            ),
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => Navigator.pushNamed(context, '/userProfile'),
           ),
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.logout_rounded, color: Colors.white),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
-            ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Premium Header with Gradient
+            // Header Section
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(24, 120, 24, 40),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
-                ),
+                color: Color(0xFFB71C1C),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(40),
                   bottomRight: Radius.circular(40),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x401A237E),
-                    blurRadius: 20,
-                    offset: Offset(0, 10),
-                  ),
-                ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello Traveller,',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Where are you\ngoing today?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            height: 1.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Search Form Card (Overlapping)
-            Transform.translate(
-              offset: const Offset(0, -30),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Where are you\ngoing today?',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.2,
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        _isLoadingStops
-                            ? const Center(child: CircularProgressIndicator())
-                            : _buildLocationField(
-                                controller: _sourceController,
-                                label: 'Source City',
-                                icon: Icons.location_on_outlined,
-                                iconColor: const Color(0xFF1A237E),
-                              ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            children: [
-                              Expanded(child: Divider()),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                child: Icon(Icons.swap_vert, color: Colors.grey),
-                              ),
-                              Expanded(child: Divider()),
-                            ],
-                          ),
-                        ),
-                        _isLoadingStops
-                            ? const SizedBox.shrink()
-                            : _buildLocationField(
-                                controller: _destinationController,
-                                label: 'Destination City',
-                                icon: Icons.my_location_outlined,
-                                iconColor: const Color(0xFFFFD700),
-                              ),
-                        const SizedBox(height: 20),
-                        InkWell(
-                          onTap: () => _selectDate(context),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.calendar_today_outlined, color: Colors.grey),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Date of Journey',
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                                    ),
-                                    Text(
-                                      _selectedDate == null ? 'Select Date' : DateFormat('dd MMM, yyyy').format(_selectedDate!),
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: _searchBuses,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1A237E),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                              elevation: 4,
-                              shadowColor: const Color(0xFF1A237E).withOpacity(0.4),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.search_rounded),
-                                SizedBox(width: 8),
-                                Text(
-                                  'SEARCH BUSES',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
+                    const SizedBox(height: 30),
+                    // Search Card
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          if (_isLoadingStops)
+                            const Center(child: CircularProgressIndicator())
+                          else ...[
+                            LocationField(
+                              key: const ValueKey('source_field'),
+                              controller: _sourceController,
+                              label: 'Source City',
+                              icon: Icons.location_on_outlined,
+                              iconColor: const Color(0xFF1A237E),
+                              allStops: _allStops,
+                            ),
+                            const SizedBox(height: 20),
+                            LocationField(
+                              key: const ValueKey('destination_field'),
+                              controller: _destinationController,
+                              label: 'Destination City',
+                              icon: Icons.navigation_outlined,
+                              iconColor: const Color(0xFFB71C1C),
+                              allStops: _allStops,
+                            ),
+                          ],
+                          const SizedBox(height: 30),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                final source = _sourceController.text;
+                                final destination = _destinationController.text;
+                                if (source.isNotEmpty && destination.isNotEmpty) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BusListScreen(
+                                        origin: source,
+                                        destination: destination,
+                                        date: '',
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Please select source and destination')),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1A237E),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                'Search Buses',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
             ),
 
             // Quick Actions
@@ -355,52 +240,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildLocationField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    required Color iconColor,
-  }) {
-    return Autocomplete<String>(
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text.isEmpty) return const Iterable<String>.empty();
-        return _allStops
-            .where((stop) => stop.stopName.toLowerCase().contains(textEditingValue.text.toLowerCase()))
-            .map((stop) => stop.stopName);
-      },
-      onSelected: (String selection) {
-        controller.text = selection;
-      },
-      fieldViewBuilder: (context, fieldController, focusNode, onFieldSubmitted) {
-        if (controller.text.isNotEmpty && fieldController.text.isEmpty) {
-          fieldController.text = controller.text;
-        }
-        fieldController.addListener(() {
-          controller.text = fieldController.text;
-        });
-        return TextField(
-          controller: fieldController,
-          focusNode: focusNode,
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: TextStyle(color: Colors.grey[600]),
-            prefixIcon: Icon(icon, color: iconColor),
-            filled: true,
-            fillColor: Colors.grey[50],
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: iconColor.withOpacity(0.5), width: 2),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildMenuIcon(IconData icon, String label, Color bgColor, Color iconColor, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
@@ -435,6 +274,77 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    );
+  }
+}
+
+class LocationField extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final Color iconColor;
+  final TextEditingController controller;
+  final List<BusStop> allStops;
+
+  const LocationField({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.iconColor,
+    required this.controller,
+    required this.allStops,
+  });
+
+  @override
+  State<LocationField> createState() => _LocationFieldState();
+}
+
+class _LocationFieldState extends State<LocationField> {
+  @override
+  Widget build(BuildContext context) {
+    return Autocomplete<String>(
+      key: ValueKey('autocomplete_${widget.label}'),
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return const Iterable<String>.empty();
+        }
+        return widget.allStops
+            .where((stop) => stop.stopName.toLowerCase().contains(textEditingValue.text.toLowerCase()))
+            .map((stop) => stop.stopName)
+            .toSet()
+            .toList();
+      },
+      onSelected: (String selection) {
+        widget.controller.text = selection;
+      },
+      fieldViewBuilder: (context, fieldController, focusNode, onFieldSubmitted) {
+        // Initial sync
+        if (widget.controller.text.isNotEmpty && fieldController.text.isEmpty) {
+          fieldController.text = widget.controller.text;
+        }
+
+        return TextField(
+          controller: fieldController,
+          focusNode: focusNode,
+          onChanged: (value) {
+            widget.controller.text = value;
+          },
+          decoration: InputDecoration(
+            labelText: widget.label,
+            labelStyle: TextStyle(color: Colors.grey[600]),
+            prefixIcon: Icon(widget.icon, color: widget.iconColor),
+            filled: true,
+            fillColor: Colors.grey[50],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: widget.iconColor.withOpacity(0.5), width: 2),
+            ),
+          ),
+        );
+      },
     );
   }
 }
