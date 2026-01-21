@@ -60,7 +60,7 @@ implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 }
 
 application {
-	mainClass = 'com.busticketing.BusTicketingBackendApplication'
+	mainClass = 'com.busticketing.busticketingbackend.BusTicketingBackendApplication'
 }
 
 tasks.named('test') {
