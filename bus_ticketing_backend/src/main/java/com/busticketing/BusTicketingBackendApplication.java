@@ -3,6 +3,7 @@ package com.busticketing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/*
 @SpringBootApplication
 public class BusTicketingBackendApplication {
 
@@ -10,3 +11,4 @@ public class BusTicketingBackendApplication {
 		SpringApplication.run(BusTicketingBackendApplication.class, args);
 	}
 }
+*/

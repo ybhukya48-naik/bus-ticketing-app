@@ -20,6 +20,9 @@ COPY src/ src/
 # Build the application (skipping tests for faster deployment)
 RUN ./gradlew build -x test
 
+# Remove the plain JAR so only the executable one remains
+RUN rm build/libs/*-plain.jar
+
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
