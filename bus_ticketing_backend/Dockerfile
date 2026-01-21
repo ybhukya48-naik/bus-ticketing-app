@@ -21,7 +21,7 @@ COPY src/ src/
 RUN ./gradlew bootJar -x test
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the specific executable JAR from the build stage

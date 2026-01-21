@@ -66,6 +66,12 @@ jar {
 bootJar {
 	mainClass = 'com.busticketing.busticketingbackend.BusTicketingBackendApplication'
 	archiveFileName = 'app.jar'
+	manifest {
+		attributes(
+			'Main-Class': 'org.springframework.boot.loader.JarLauncher',
+			'Start-Class': 'com.busticketing.busticketingbackend.BusTicketingBackendApplication'
+		)
+	}
 }
 
 application {

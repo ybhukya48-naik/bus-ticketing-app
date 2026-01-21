@@ -1,14 +1,1 @@
-package com.busticketing;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-/*
-@SpringBootApplication
-public class BackupMain {
-
-	public static void main(String[] args) {
-		SpringApplication.run(BackupMain.class, args);
-	}
-}
-*/
+// This file is empty to avoid conflicts with the main application class in the sub-package.
