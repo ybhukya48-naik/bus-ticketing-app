@@ -5,7 +5,7 @@ class ApiConfig {
   // 3. Paste it below as the 'defaultValue'
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.66.30:8080/api', // Current Local IP
+    defaultValue: 'https://bus-ticketing-app.onrender.com/api', // Render Cloud URL
   );
 
   // You can also use this for automatic platform detection if needed:
