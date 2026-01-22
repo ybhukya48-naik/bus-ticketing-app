@@ -27,7 +27,7 @@ COPY --from=build /app/build/libs/app.jar app.jar
 EXPOSE 8080
 
 # JVM flags for memory management in 512MB container
-# -Xmx300m: Max heap 300MB
-# -Xms300m: Start heap 300MB
+# -Xmx512m: Max heap 512MB
+# -Xms256m: Start heap 256MB
 # -XX:+UseG1GC: Modern garbage collector
-ENTRYPOINT ["java", "-Xmx300m", "-Xms300m", "-XX:+UseG1GC", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xms256m", "-Xmx512m", "-XX:+UseG1GC", "-jar", "app.jar"]
