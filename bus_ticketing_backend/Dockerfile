@@ -19,15 +19,14 @@ RUN chmod +x gradlew
 # Build the application using bootJar
 RUN ./gradlew bootJar -x test
 
-# Stage 2: Create the runtime image
+# Stage 2: Runtime
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-
-# Copy the JAR from the build stage
 COPY --from=build /app/build/libs/app.jar app.jar
-
-# Expose the port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# JVM flags for memory management in 512MB container
+# -Xmx300m: Max heap 300MB
+# -Xms300m: Start heap 300MB
+# -XX:+UseG1GC: Modern garbage collector
+ENTRYPOINT ["java", "-Xmx300m", "-Xms300m", "-XX:+UseG1GC", "-jar", "app.jar"]
