@@ -5,7 +5,7 @@ class ApiConfig {
   // 3. Paste it below as the 'defaultValue'
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://bus-ticketing-app-2xms.onrender.com/api', // Updated Render URL
+    defaultValue: 'https://bus-ticketing-app-2xms.onrender.com/api',
   );
 
   // You can also use this for automatic platform detection if needed:
