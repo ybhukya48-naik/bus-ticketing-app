@@ -10,9 +10,9 @@ version = '0.0.1-SNAPSHOT'
 description = 'Backend for AI-based conductor-less electrical bus tickets system'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
@@ -60,13 +60,13 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
-jar {
-	enabled = false
+bootJar {
+    archiveFileName = "app.jar"
+    mainClass = "com.busticketing.busticketingbackend.BusTicketingBackendApplication"
 }
 
-bootJar {
-	mainClass = 'com.busticketing.busticketingbackend.BusTicketingBackendApplication'
-	archiveFileName = 'app.jar'
+jar {
+    enabled = false
 }
 
 application {
