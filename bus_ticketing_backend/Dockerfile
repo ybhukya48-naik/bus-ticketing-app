@@ -1,9 +1,10 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:17-jdk AS build
+FROM eclipse-temurin:20-jdk AS build
 WORKDIR /app
 
 # Install dos2unix to fix Windows line endings in gradlew
 RUN apt-get update && apt-get install -y dos2unix
+
 
 # Copy only the necessary files for building
 COPY gradlew .
