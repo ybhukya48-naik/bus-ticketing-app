@@ -22,11 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -47,7 +51,7 @@ public class UserController {
 
     @PostMapping({"/register", "/signup"})
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        System.out.println("!!! Received registration request for username: " + registerRequest.getUsername() + ", email: " + registerRequest.getEmail() + " !!!");
+        logger.info("Received registration request for username: {}, email: {}", registerRequest.getUsername(), registerRequest.getEmail());
         
         if (registerRequest.getUsername() == null || registerRequest.getUsername().isEmpty()) {
             return new ResponseEntity<>("Error: Username is required!", HttpStatus.BAD_REQUEST);
@@ -60,12 +64,12 @@ public class UserController {
         }
 
         if (userService.existsByUsername(registerRequest.getUsername())) {
-            System.out.println("!!! Registration failed: Username " + registerRequest.getUsername() + " already taken !!!");
+            logger.warn("Registration failed: Username {} already taken", registerRequest.getUsername());
             return new ResponseEntity<>("Error: Username is already taken!", HttpStatus.BAD_REQUEST);
         }
 
         if (userService.existsByEmail(registerRequest.getEmail())) {
-            System.out.println("!!! Registration failed: Email " + registerRequest.getEmail() + " already in use !!!");
+            logger.warn("Registration failed: Email {} already in use", registerRequest.getEmail());
             return new ResponseEntity<>("Error: Email is already in use!", HttpStatus.BAD_REQUEST);
         }
 
@@ -75,21 +79,20 @@ public class UserController {
             user.setPassword(registerRequest.getPassword());
             user.setEmail(registerRequest.getEmail());
 
-            System.out.println("!!! Saving user to database... !!!");
+            logger.debug("Saving user to database...");
             User savedUser = userService.registerNewUser(user);
-            System.out.println("!!! User saved successfully with ID: " + savedUser.getId() + " !!!");
+            logger.info("User saved successfully with ID: {}", savedUser.getId());
             
             return ResponseEntity.ok("User registered successfully!");
         } catch (Exception e) {
-            System.out.println("!!! Error during registration: " + e.getMessage() + " !!!");
-            e.printStackTrace();
+            logger.error("Error during registration: {}", e.getMessage());
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping({"/login", "/signin"})
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        System.out.println("!!! Login attempt for user: " + loginRequest.getUsername() + " !!!");
+        logger.info("Login attempt for user: {}", loginRequest.getUsername());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -106,10 +109,10 @@ public class UserController {
                 (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
             String actualUsername = userDetails.getUsername();
 
-            System.out.println("!!! Login successful for user: " + actualUsername + " !!!");
+            logger.info("Login successful for user: {}", actualUsername);
             return ResponseEntity.ok(new JwtResponse(jwt, actualUsername));
         } catch (AuthenticationException e) {
-            System.out.println("!!! Login failed for user: " + loginRequest.getUsername() + " - Error: " + e.getMessage() + " !!!");
+            logger.error("Login failed for user: {} - Error: {}", loginRequest.getUsername(), e.getMessage());
             return new ResponseEntity<>("Error: Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
     }
@@ -135,7 +138,7 @@ public class UserController {
         }
         
         String username = authentication.getName();
-        System.out.println("!!! Fetching profile for user: " + username + " !!!");
+        logger.info("Fetching profile for user: {}", username);
         
         User user = userService.findByUsername(username).orElse(null);
         if (user != null) {

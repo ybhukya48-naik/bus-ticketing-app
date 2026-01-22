@@ -2,6 +2,8 @@ package com.busticketing.busticketingbackend.service;
 
 import com.busticketing.busticketingbackend.model.User;
 import com.busticketing.busticketingbackend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 @Service
 public class PasswordResetService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PasswordResetService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -31,8 +35,8 @@ public class PasswordResetService {
     }
 
     public void sendPasswordResetEmail(String email, String token) {
-        System.out.println("Sending password reset email to: " + email);
-        System.out.println("Reset link: http://localhost:8080/api/auth/reset-password?token=" + token);
+        logger.info("Sending password reset email to: {}", email);
+        logger.debug("Reset link: http://localhost:8080/api/auth/reset-password?token={}", token);
     }
 
     public boolean resetPassword(String token, String newPassword) {

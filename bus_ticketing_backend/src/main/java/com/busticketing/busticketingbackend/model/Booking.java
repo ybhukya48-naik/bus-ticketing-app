@@ -1,22 +1,41 @@
 package com.busticketing.busticketingbackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "bookings")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "bus_number")
     private String busNumber;
+
+    @Column(name = "route")
     private String route;
+
+    @Column(name = "booking_date")
     private String bookingDate;
+
+    @Column(name = "number_of_seats")
     private int numberOfSeats;
+
+    @Column(name = "total_price")
     private double totalPrice;
+
+    @Column(name = "username")
     private String username; // To link booking to a user
+
+    @Column(name = "qr_code_data")
     private String qrCodeData;
+
+    @Column(name = "status")
     private String status; // e.g., PENDING, PAID, FAILED
 
     public Booking() {

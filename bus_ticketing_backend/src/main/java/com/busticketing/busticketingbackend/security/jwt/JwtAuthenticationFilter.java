@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.startsWith("/api/auth/register") || 
                path.startsWith("/api/auth/signup") ||
                path.startsWith("/api/auth/test") ||
+               path.startsWith("/actuator") ||
                path.startsWith("/error");
     }
 
@@ -47,14 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String path = request.getServletPath();
         String method = request.getMethod();
-        System.out.println("!!! Incoming request: " + method + " " + path + " !!!");
+        logger.debug("Incoming request: {} {}", method, path);
         try {
             String jwt = parseJwt(request);
             if (jwt != null) {
-                System.out.println("!!! Found JWT token in request !!!");
                 if (jwtUtils.validateJwtToken(jwt)) {
                     String username = jwtUtils.getUserNameFromJwtToken(jwt);
-                    System.out.println("!!! JWT token is valid. Username: " + username + " !!!");
+                    logger.debug("JWT token is valid. Username: {}", username);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
@@ -64,17 +64,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    System.out.println("!!! SecurityContext updated with authentication for user: " + username + " !!!");
+                    logger.debug("SecurityContext updated with authentication for user: {}", username);
                 } else {
-                    System.out.println("!!! Invalid JWT Token for path: " + path + " !!!");
-                    logger.warn("!!! Invalid JWT Token for path: {} !!!", path);
+                    logger.warn("Invalid JWT Token for path: {}", path);
                 }
             } else {
-                System.out.println("!!! No JWT found in request for path: " + path + " !!!");
-                logger.debug("!!! No JWT found in request for path: {} !!!", path);
+                logger.trace("No JWT found in request for path: {}", path);
             }
         } catch (Exception e) {
-            logger.error("!!! Cannot set user authentication: {} for path: {} !!!", e.getMessage(), path);
+            logger.error("Cannot set user authentication: {} for path: {}", e.getMessage(), path);
         }
 
         filterChain.doFilter(request, response);

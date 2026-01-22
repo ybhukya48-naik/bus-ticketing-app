@@ -8,13 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Bus")
+@Table(name = "buses")
 public class Bus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "busNumber")
+    @Column(name = "bus_number")
     private String busNumber;
 
     @Column(name = "route")
@@ -23,10 +23,10 @@ public class Bus {
     @Column(name = "capacity")
     private int capacity;
 
-    @Column(name = "availableSeats")
+    @Column(name = "available_seats")
     private int availableSeats;
 
-    @Column(name = "currentLocation")
+    @Column(name = "current_location")
     private String currentLocation;
 
     @Column(name = "rating")
@@ -35,7 +35,7 @@ public class Bus {
     @Column(name = "price")
     private double price;
 
-    @Column(name = "routeStopsOrder", columnDefinition = "TEXT")
+    @Column(name = "route_stops_order", columnDefinition = "TEXT")
     private String routeStopsOrder; // Field for real-time bus data from GitHub
 
     public Bus() {

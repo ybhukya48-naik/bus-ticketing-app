@@ -1,17 +1,29 @@
 package com.busticketing.busticketingbackend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Route")
+@Table(name = "routes")
 public class Route {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "route_name")
     private String routeName;
+
+    @Column(name = "origin")
     private String origin;
+
+    @Column(name = "destination")
     private String destination;
+
+    @Column(name = "distance")
     private Double distance;
 
     public Route() {}

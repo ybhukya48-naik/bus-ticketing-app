@@ -10,6 +10,8 @@ import com.stripe.exception.StripeException;
 
 import com.google.gson.JsonSyntaxException;
 import com.busticketing.busticketingbackend.config.StripeProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/stripe/webhook")
 public class StripeWebhookController {
+
+    private static final Logger logger = LoggerFactory.getLogger(StripeWebhookController.class);
 
     @Autowired
     private StripeProperties stripeProperties;
@@ -39,10 +43,10 @@ public class StripeWebhookController {
         try {
            event = Webhook.constructEvent(payload, sigHeader, stripeProperties.getWebhookSecret());
         } catch (SignatureVerificationException e) {
-            System.out.println("⚠️  Webhook error while validating signature." + e.getMessage());
+            logger.error("Webhook error while validating signature: {}", e.getMessage());
             return new ResponseEntity<>("Webhook Error: Invalid Signature", HttpStatus.BAD_REQUEST);
         } catch (JsonSyntaxException e) { // Malformed JSON
-            System.out.println("⚠️  Webhook error while parsing payload." + e.getMessage());
+            logger.error("Webhook error while parsing payload: {}", e.getMessage());
             return new ResponseEntity<>("Webhook Error: Malformed JSON", HttpStatus.BAD_REQUEST);
         }
 
@@ -51,37 +55,37 @@ public class StripeWebhookController {
             switch (event.getType()) {
                 case "payment_intent.succeeded":
                     PaymentIntent paymentIntent = (PaymentIntent) event.getDataObjectDeserializer().deserializeUnsafe();
-                    System.out.println("Payment Intent Succeeded: " + paymentIntent.getId());
+                    logger.info("Payment Intent Succeeded: {}", paymentIntent.getId());
                     String bookingIdFromPaymentIntent = paymentIntent.getMetadata().get("bookingId");
                     if (bookingIdFromPaymentIntent != null) {
                         bookingService.updateBookingStatus(bookingIdFromPaymentIntent, "PAID");
-                        System.out.println("Booking " + bookingIdFromPaymentIntent + " status updated to PAID.");
+                        logger.info("Booking {} status updated to PAID.", bookingIdFromPaymentIntent);
                     }
                     break;
                 case "charge.succeeded":
                     Charge charge = (Charge) event.getDataObjectDeserializer().deserializeUnsafe();
-                    System.out.println("Charge Succeeded: " + charge.getId());
+                    logger.info("Charge Succeeded: {}", charge.getId());
                     String bookingIdFromCharge = charge.getMetadata().get("bookingId");
                     if (bookingIdFromCharge != null) {
                         bookingService.updateBookingStatus(bookingIdFromCharge, "PAID");
-                        System.out.println("Booking " + bookingIdFromCharge + " status updated to PAID.");
+                        logger.info("Booking {} status updated to PAID.", bookingIdFromCharge);
                     }
                     break;
                 case "payment_intent.payment_failed":
                     PaymentIntent failedPaymentIntent = (PaymentIntent) event.getDataObjectDeserializer().deserializeUnsafe();
-                    System.out.println("Payment Intent Failed: " + failedPaymentIntent.getId());
+                    logger.info("Payment Intent Failed: {}", failedPaymentIntent.getId());
                     String failedBookingId = failedPaymentIntent.getMetadata().get("bookingId");
                     if (failedBookingId != null) {
                         bookingService.updateBookingStatus(failedBookingId, "FAILED");
-                        System.out.println("Booking " + failedBookingId + " status updated to FAILED.");
+                        logger.info("Booking {} status updated to FAILED.", failedBookingId);
                     }
                     break;
                 default:
-                    System.out.println("Unhandled event type: " + event.getType());
+                    logger.warn("Unhandled event type: {}", event.getType());
                     break;
             }
         } catch (StripeException e) {
-            System.out.println("⚠️  Error deserializing event object: " + e.getMessage());
+            logger.error("Error deserializing event object: {}", e.getMessage());
             return new ResponseEntity<>("Webhook Error: Failed to deserialize event object", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

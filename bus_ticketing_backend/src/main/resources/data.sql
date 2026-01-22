@@ -1,5 +1,4 @@
-DELETE FROM Route;
-INSERT INTO Route (id, routeName, origin, destination, distance) VALUES
+INSERT INTO routes (id, route_name, origin, destination, distance) VALUES
 (1, '127K', 'KOTI', 'KONDAPUR', 0.0),
 (2, '127K', '127K KONDAPUR', 'KOTI', 0.0),
 (11, '127VB', 'KOTI', 'VBIT', 0.0),
@@ -242,7 +241,7 @@ INSERT INTO Route (id, routeName, origin, destination, distance) VALUES
 (800, '9X/230X', 'DUNDIGAL', 'AFZULGUNJ', 0.0),
 (810, '10H/224', 'SECUNDERABAD', 'MIYAPUR 2 DEPOT', 0.0),
 (812, '10KM', 'SECUNDERABAD', 'NIZAMPETXROADS', 0.0),
-(813, '10KM', 'SECUNDERABADTOMALAYSIANTOWNSHI', '', 0.0),
+(813, '10KM', 'SECUNDERABAD', 'MALAYSIAN TOWNSHIP', 0.0),
 (822, '90DS', 'UPPAL DEPOT', 'SNEHAPURI', 0.0),
 (834, '186', 'NGOS', 'KPHB', 0.0),
 (839, '10KM', 'NIZAMPET X ROAD', 'SECUNDERABA', 0.0),
@@ -528,10 +527,9 @@ INSERT INTO Route (id, routeName, origin, destination, distance) VALUES
 (1573, '225LV', 'BHEL', 'NGOS COLONY', 0.0),
 (2125, '113M/W', 'UPPAL', 'WAVE ROCK', 0.0),
 (2127, '113M/W', 'WAVEROCK', 'UPPAL', 0.0),
-(2142, '113M/K', 'UPPAL', 'LINGAMPALLY VIA KDP', 0.0);
+(2142, '113M/K', 'UPPAL', 'LINGAMPALLY VIA KDP', 0.0) ON CONFLICT (id) DO NOTHING;
 
-DELETE FROM BusStop;
-INSERT INTO BusStop (id, stopName, latitude, longitude) VALUES
+INSERT INTO bus_stops (id, stop_name, latitude, longitude) VALUES
 (348, 'koti', 17.38471, 78.48426),
 (301, 'Abids GPO', 17.38781, 78.47613),
 (487, 'Annapurna Hotel', 17.38903, 78.4734),
@@ -2096,10 +2094,9 @@ INSERT INTO BusStop (id, stopName, latitude, longitude) VALUES
 (1249, 'Ramnagar E Seva', 17.40915, 78.50884),
 (1423, 'katedan', 17.31213, 78.43855),
 (1427, 'NPA', 17.33085, 78.43746),
-(1431, 'Water Filter', 17.34104, 78.45035);
+(1431, 'Water Filter', 17.34104, 78.45035) ON CONFLICT (id) DO NOTHING;
 
-DELETE FROM Bus;
-INSERT INTO Bus (id, busNumber, route, capacity, availableSeats, currentLocation, rating, price, routeStopsOrder) VALUES
+INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_location, rating, price, route_stops_order) VALUES
 (1, 'TS09UB1234', '10H', 40, 25, 'Secunderabad', 4.5, 25.0, '2084,1027,953'),
 (2, 'TS09UB5678', '222A', 40, 15, 'Koti', 4.2, 35.0, '15,16,88'),
 (3, 'TS09UB9012', '113M/W', 40, 30, 'Uppal', 4.8, 40.0, '2140,1265,398'),
@@ -2114,4 +2111,9 @@ INSERT INTO Bus (id, busNumber, route, capacity, availableSeats, currentLocation
 (12, 'TS09UB6789', '113M/W', 40, 22, 'Wave Rock', 4.5, 40.0, '1266,2140,398'),
 (13, 'TS09UB1122', '10H/17H', 40, 8, 'Kondapur', 4.3, 30.0, '131,1027,497'),
 (14, 'TS09UB3344', '17H/10H', 40, 30, 'Waverock', 4.6, 30.0, '1555,1027,1265'),
-(15, 'TS09UB5566', '10H/W', 40, 15, 'Secunderabad', 4.4, 30.0, '1257,1265,2084');
+(15, 'TS09UB5566', '10H/W', 40, 15, 'Secunderabad', 4.4, 30.0, '1257,1265,2084') ON CONFLICT (id) DO NOTHING;
+
+-- Reset sequences for PostgreSQL IDENTITY columns after manual ID insertion
+SELECT setval(pg_get_serial_sequence('routes', 'id'), coalesce(max(id), 1)) FROM routes;
+SELECT setval(pg_get_serial_sequence('bus_stops', 'id'), coalesce(max(id), 1)) FROM bus_stops;
+SELECT setval(pg_get_serial_sequence('buses', 'id'), coalesce(max(id), 1)) FROM buses;
