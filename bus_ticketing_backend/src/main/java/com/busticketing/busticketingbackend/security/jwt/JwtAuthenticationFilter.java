@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 
+import org.springframework.context.annotation.Lazy;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -29,6 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
 
     @Autowired
+    @Lazy
     private UserDetailsServiceImpl userDetailsService;
 
     @Override

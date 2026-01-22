@@ -4,6 +4,7 @@ import com.busticketing.busticketingbackend.security.jwt.JwtAuthenticationFilter
 import com.busticketing.busticketingbackend.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -60,7 +61,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, @Lazy JwtAuthenticationFilter jwtAuthenticationFilter, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.passwordEncoder = passwordEncoder;
