@@ -15,6 +15,9 @@ public class BusStopServiceImpl implements BusStopService {
 
     @Override
     public List<BusStop> getBusStopsByIds(List<Long> ids) {
+        if (ids == null) {
+            return List.of();
+        }
         return busStopRepository.findAllById(ids);
     }
 
