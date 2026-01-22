@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface BusStopRepository extends JpaRepository<BusStop, Long> {
-    List<BusStop> findAllByIdIn(List<Long> ids);
 }

@@ -137,7 +137,7 @@ public class UserController {
         String username = authentication.getName();
         System.out.println("!!! Fetching profile for user: " + username + " !!!");
         
-        User user = userService.findByUsername(username);
+        User user = userService.findByUsername(username).orElse(null);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {

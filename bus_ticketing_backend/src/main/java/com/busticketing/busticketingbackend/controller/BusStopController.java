@@ -23,7 +23,7 @@ public class BusStopController {
         List<Long> stopIds = Arrays.stream(ids.split(","))
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(busStopRepository.findAllByIdIn(stopIds));
+        return ResponseEntity.ok(busStopRepository.findAllById(stopIds));
     }
 
     @GetMapping
