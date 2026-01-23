@@ -15,19 +15,23 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Configuration
-@ConditionalOnExpression("'${DATABASE_URL:}'.startsWith('postgres')")
+@ConditionalOnExpression("'${SPRING_DATASOURCE_URL:}'.startsWith('postgres') || '${DATABASE_URL:}'.startsWith('postgres')")
 public class DatabaseConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
-    @Value("${DATABASE_URL}")
+    @Value("${SPRING_DATASOURCE_URL:${DATABASE_URL:}}")
     private String databaseUrl;
 
     @Bean
     @Primary
     public DataSource dataSource() {
-        logger.info("Detected DATABASE_URL in postgres:// format. Converting to JDBC...");
+        logger.info("Detected postgres:// format in connection string. Converting to JDBC...");
         try {
+            if (databaseUrl == null || databaseUrl.isEmpty()) {
+                throw new RuntimeException("Database URL is empty but configuration was triggered.");
+            }
+            
             URI uri = new URI(databaseUrl);
             String userInfo = uri.getUserInfo();
             String host = uri.getHost();
@@ -35,7 +39,7 @@ public class DatabaseConfig {
             String path = uri.getPath();
 
             if (userInfo == null || host == null) {
-                throw new URISyntaxException(databaseUrl, "Invalid database URL components");
+                throw new URISyntaxException(databaseUrl, "Invalid database URL components (missing user info or host)");
             }
 
             String[] userPass = userInfo.split(":");
@@ -51,13 +55,14 @@ public class DatabaseConfig {
             
             jdbcUrl.append(path);
             
+            // Render specific: add sslmode=require if not present
             if (!jdbcUrl.toString().contains("?")) {
                 jdbcUrl.append("?sslmode=require");
             } else if (!jdbcUrl.toString().contains("sslmode")) {
                 jdbcUrl.append("&sslmode=require");
             }
 
-            logger.info("Generated JDBC URL successfully (password masked)");
+            logger.info("Generated JDBC URL successfully for host: {}", host);
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(jdbcUrl.toString());
@@ -65,16 +70,17 @@ public class DatabaseConfig {
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
             
-            config.setMaximumPoolSize(10);
+            // Optimized for free tier
+            config.setMaximumPoolSize(5); 
             config.setMinimumIdle(1);
-            config.setIdleTimeout(60000);
+            config.setIdleTimeout(30000);
             config.setConnectionTimeout(30000);
             config.setMaxLifetime(1800000);
 
             return new HikariDataSource(config);
         } catch (URISyntaxException e) {
-            logger.error("Failed to parse DATABASE_URL: {}", e.getMessage());
-            throw new RuntimeException("Invalid DATABASE_URL", e);
+            logger.error("Failed to parse Database URL: {}", e.getMessage());
+            throw new RuntimeException("Invalid Database URL format", e);
         }
     }
 }
