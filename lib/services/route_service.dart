@@ -5,7 +5,7 @@ import 'package:bus_ticketing_app/models/route_model.dart';
 import 'package:bus_ticketing_app/services/api_config.dart';
 
 class RouteService {
-  static const String baseUrl = '${ApiConfig.baseUrl}/routes';
+  static final String baseUrl = '${ApiConfig.baseUrl}/routes';
 
   Future<List<BusRoute>> fetchRoutes() async {
     final response = await http.get(Uri.parse(baseUrl));

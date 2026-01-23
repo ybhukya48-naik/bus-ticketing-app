@@ -113,6 +113,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/bus-stops/**").permitAll()
                                 .requestMatchers("/api/routes/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
                 );

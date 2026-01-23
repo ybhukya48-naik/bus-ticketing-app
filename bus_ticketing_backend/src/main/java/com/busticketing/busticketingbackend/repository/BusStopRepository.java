@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface BusStopRepository extends JpaRepository<BusStop, Long> {
     Optional<BusStop> findByStopNameIgnoreCase(String stopName);
+    java.util.List<BusStop> findAllByStopNameIgnoreCase(String stopName);
+    java.util.List<BusStop> findByStopNameContainingIgnoreCase(String query);
 }

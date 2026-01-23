@@ -50,4 +50,12 @@ public class BusStopController {
     public ResponseEntity<List<BusStop>> getAllStops() {
         return ResponseEntity.ok(busStopService.getAllBusStops());
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BusStop>> searchStops(@RequestParam String query) {
+        if (query == null || query.trim().length() < 2) {
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+        return ResponseEntity.ok(busStopService.searchBusStops(query.trim()));
+    }
 }

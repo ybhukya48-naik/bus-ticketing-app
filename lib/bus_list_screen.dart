@@ -4,6 +4,9 @@ import 'package:bus_ticketing_app/seat_selection_screen.dart';
 import 'package:bus_ticketing_app/services/bus_service.dart';
 import 'package:bus_ticketing_app/models/bus.dart';
 
+import 'package:bus_ticketing_app/models/bus_stop.dart';
+import 'package:bus_ticketing_app/services/stop_service.dart';
+
 class BusListScreen extends StatefulWidget {
   final String? origin;
   final String? destination;
@@ -17,11 +20,31 @@ class BusListScreen extends StatefulWidget {
 
 class _BusListScreenState extends State<BusListScreen> {
   late Future<List<Bus>> futureBuses;
+  final Map<String, List<BusStop>> _busStopsCache = {};
 
   @override
   void initState() {
     super.initState();
     futureBuses = fetchBuses();
+  }
+
+  Future<List<BusStop>> _getBusStops(Bus bus) async {
+    if (_busStopsCache.containsKey(bus.id)) {
+      return _busStopsCache[bus.id]!;
+    }
+
+    if (bus.routeStopsOrder == null || bus.routeStopsOrder!.isEmpty) {
+      return [];
+    }
+
+    try {
+      final stops = await StopService().fetchStopsByIds(bus.routeStopsOrder!);
+      _busStopsCache[bus.id] = stops;
+      return stops;
+    } catch (e) {
+      debugPrint('Error fetching stops for bus ${bus.id}: $e');
+      return [];
+    }
   }
 
   Future<List<Bus>> fetchBuses() async {
@@ -147,6 +170,58 @@ class _BusListScreenState extends State<BusListScreen> {
                               _buildBusDetail(Icons.location_on, 'Live', 'Track'),
                             ],
                           ),
+                        ),
+                        // Stops Section
+                        FutureBuilder<List<BusStop>>(
+                          future: _getBusStops(bus),
+                          builder: (context, stopSnapshot) {
+                            if (stopSnapshot.hasData && stopSnapshot.data!.isNotEmpty) {
+                              return Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Stops:',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: stopSnapshot.data!.map((stop) {
+                                          int index = stopSnapshot.data!.indexOf(stop);
+                                          return Row(
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: Text(
+                                                  stop.stopName,
+                                                  style: const TextStyle(fontSize: 11, color: Colors.blue),
+                                                ),
+                                              ),
+                                              if (index < stopSnapshot.data!.length - 1)
+                                                const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
+                                            ],
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
                         ),
                         // Bottom part with actions
                         Padding(

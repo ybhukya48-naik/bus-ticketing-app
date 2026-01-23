@@ -1,0 +1,28 @@
+services:
+  # Backend Spring Boot Service
+  - type: web
+    name: bus-ticketing-backend
+    env: docker
+    plan: free
+    rootDir: bus_ticketing_backend
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: bus-ticketing-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
+databases:
+  - name: bus-ticketing-db
+    plan: free
+    databaseName: bus_ticketing
+    user: bus_admin

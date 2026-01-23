@@ -1,2 +1,35 @@
 -dontwarn com.stripe.android.pushProvisioning.**
 -keep class com.stripe.android.pushProvisioning.** { *; }
+
+# Razorpay Proguard Rules
+-keep class com.razorpay.** {*;}
+-dontwarn com.razorpay.**
+-keep class com.google.android.gms.wallet.** {*;}
+-keep class com.google.android.gms.wallet.WalletOptions$Builder {*;}
+-keep class com.google.android.gms.wallet.PaymentDataRequest$Builder {*;}
+-keep class com.google.android.gms.wallet.IsReadyToPayRequest$Builder {*;}
+-keep class com.google.android.gms.wallet.PaymentMethodTokenizationParameters$Builder {*;}
+-keep class com.google.android.gms.wallet.TransactionInfo$Builder {*;}
+-keep class com.google.android.gms.wallet.MaskedWalletRequest$Builder {*;}
+-keep class com.google.android.gms.wallet.FullWalletRequest$Builder {*;}
+-keep class com.google.android.gms.wallet.Cart$Builder {*;}
+-keep class com.google.android.gms.wallet.LineItem$Builder {*;}
+-keep class com.google.android.gms.wallet.ShippingAddressRequirements$Builder {*;}
+-keep class com.google.android.gms.wallet.LoyaltyWalletObject$Builder {*;}
+-keep class com.google.android.gms.wallet.OfferWalletObject$Builder {*;}
+-keep class com.google.android.gms.wallet.GiftCardWalletObject$Builder {*;}
+-keep class com.google.android.gms.wallet.InstrumentInfo$Builder {*;}
+-keep class com.google.android.gms.wallet.ProxyCard$Builder {*;}
+-keep class com.google.android.gms.wallet.WalletObjectsOptions$Builder {*;}
+-keep class com.google.android.gms.wallet.fragment.WalletFragmentInitParams$Builder {*;}
+-keep class com.google.android.gms.wallet.fragment.WalletFragmentOptions$Builder {*;}
+-keep class com.google.android.gms.wallet.fragment.WalletFragmentStyle {*;}
+-keep class com.google.android.gms.wallet.wobs.CommonWalletObject$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.LabelValue$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.LabelValueRow$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.LoyaltyPoints$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.LoyaltyPointsBalance$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.TextModulesData$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.TimeInterval$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.UriData$Builder {*;}
+-keep class com.google.android.gms.wallet.wobs.WalletObjectMessage$Builder {*;}

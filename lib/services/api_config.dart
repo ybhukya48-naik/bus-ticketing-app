@@ -1,16 +1,33 @@
-class ApiConfig {
-  // IMPORTANT: For "without same WiFi" and "permanent" access:
-  // 1. Deploy your backend to Render.com
-  // 2. Copy your Render URL (e.g., https://bus-app.onrender.com/api)
-  // 3. Paste it below as the 'defaultValue'
-  static const String baseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'https://bus-ticketing-app-2xms.onrender.com/api',
-  );
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 
-  // You can also use this for automatic platform detection if needed:
-  // static String get baseUrl {
-  //   if (UniversalPlatform.isAndroid) return 'http://10.0.2.2:8080/api';
-  //   return 'http://localhost:8080/api';
-  // }
+class ApiConfig {
+  // Toggle this for local vs production testing
+  // Set to false for production (Render)
+  static const bool useLocalBackend = false;
+
+  // Render Production URL
+  static const String _productionUrl = 'https://bus-ticketing-app-2xms.onrender.com/api';
+  
+  // Local Development URLs
+  static const String _androidLocalUrl = 'http://10.0.2.2:8080/api';
+  static const String _standardLocalUrl = 'http://localhost:8080/api';
+
+  static String get baseUrl {
+    if (!useLocalBackend) return _productionUrl;
+    
+    if (kIsWeb) {
+      return _standardLocalUrl;
+    }
+    
+    try {
+      if (Platform.isAndroid) {
+        return _androidLocalUrl;
+      }
+    } catch (e) {
+      // Platform might not be available on all platforms
+    }
+    
+    return _standardLocalUrl;
+  }
 }

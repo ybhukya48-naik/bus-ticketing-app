@@ -6,4 +6,5 @@ import java.util.List;
 public interface BusStopService {
     List<BusStop> getBusStopsByIds(List<Long> ids);
     List<BusStop> getAllBusStops();
+    List<BusStop> searchBusStops(String query);
 }

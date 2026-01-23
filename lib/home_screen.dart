@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             LocationField(
                               key: const ValueKey('source_field'),
                               controller: _sourceController,
-                              label: 'Source City',
+                              label: 'Source City/Stop',
                               icon: Icons.location_on_outlined,
                               iconColor: const Color(0xFF1A237E),
                               allStops: _allStops,
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             LocationField(
                               key: const ValueKey('destination_field'),
                               controller: _destinationController,
-                              label: 'Destination City',
+                              label: 'Destination City/Stop',
                               icon: Icons.navigation_outlined,
                               iconColor: const Color(0xFFB71C1C),
                               allStops: _allStops,

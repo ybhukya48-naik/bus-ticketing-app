@@ -25,4 +25,9 @@ public class BusStopServiceImpl implements BusStopService {
     public List<BusStop> getAllBusStops() {
         return busStopRepository.findAll();
     }
+
+    @Override
+    public List<BusStop> searchBusStops(String query) {
+        return busStopRepository.findByStopNameContainingIgnoreCase(query);
+    }
 }

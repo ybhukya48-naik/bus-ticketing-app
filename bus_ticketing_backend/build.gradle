@@ -42,6 +42,9 @@ dependencies {
 	implementation 'com.stripe:stripe-java:20.59.0'
 	implementation 'com.google.code.gson:gson:2.10.1'
 
+	// 📄 Swagger/OpenAPI Documentation
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
+
 
 
 	// 🐬 MySQL Driver
@@ -49,6 +52,9 @@ dependencies {
 
 	// 🐘 PostgreSQL Driver (for Render)
 	runtimeOnly 'org.postgresql:postgresql'
+
+	// 🧪 H2 Database (for Local/Testing)
+	runtimeOnly 'com.h2database:h2'
 
 	// ✨ Lombok
 	compileOnly 'org.projectlombok:lombok'
