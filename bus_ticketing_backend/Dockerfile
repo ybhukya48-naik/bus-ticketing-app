@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Copy gradle files for caching
 COPY gradlew .
+RUN chmod +x gradlew
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
@@ -16,8 +17,8 @@ COPY src src
 COPY *.csv .
 COPY *.sql .
 
-# Build the application
-RUN ./gradlew clean bootJar --no-daemon
+# Build the application - skip tests to speed up and avoid DB connection issues during build
+RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Final stage
 FROM eclipse-temurin:17-jre-alpine
