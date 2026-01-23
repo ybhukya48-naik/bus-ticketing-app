@@ -1,6 +1,9 @@
 # Build stage
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
+
+# Set Gradle memory limits for Render free tier
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx512m'"
 
 # Copy gradle files for caching
 COPY gradlew .
@@ -14,22 +17,19 @@ RUN ./gradlew dependencies --no-daemon
 
 # Copy source code and data
 COPY src src
-COPY *.csv .
-COPY *.sql .
+# Use wildcards safely to avoid build failure if files are missing
+COPY *.csv . 
+COPY src/main/resources/data.sql .
 
 # Build the application - skip tests to speed up and avoid DB connection issues during build
 RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Final stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the jar from build stage
 COPY --from=build /app/build/libs/*.jar app.jar
-
-# Copy data.sql if needed for runtime initialization (though Hibernate handles it)
-# The jar contains the resources, but if you want to keep them external:
-# COPY --from=build /app/src/main/resources/data.sql data.sql
 
 EXPOSE 8080
 
