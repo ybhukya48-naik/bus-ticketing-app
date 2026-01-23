@@ -15,72 +15,84 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Configuration
-@ConditionalOnExpression("'${SPRING_DATASOURCE_URL:}'.startsWith('postgres') || '${DATABASE_URL:}'.startsWith('postgres')")
 public class DatabaseConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
-    @Value("${SPRING_DATASOURCE_URL:${DATABASE_URL:}}")
+    @Value("${SPRING_DATASOURCE_URL:${DATABASE_URL:jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL}}")
     private String databaseUrl;
+
+    @Value("${SPRING_DATASOURCE_USERNAME:sa}")
+    private String defaultUsername;
+
+    @Value("${SPRING_DATASOURCE_PASSWORD:}")
+    private String defaultPassword;
 
     @Bean
     @Primary
     public DataSource dataSource() {
-        logger.info("Detected postgres:// format in connection string. Converting to JDBC...");
+        if (databaseUrl.startsWith("postgres")) {
+            logger.info("Detected postgres:// format. Converting to JDBC for PostgreSQL...");
+            return createPostgresDataSource(databaseUrl);
+        } else {
+            logger.info("Using standard JDBC URL: {}", databaseUrl);
+            return createDefaultDataSource(databaseUrl);
+        }
+    }
+
+    private DataSource createPostgresDataSource(String url) {
         try {
-            if (databaseUrl == null || databaseUrl.isEmpty()) {
-                throw new RuntimeException("Database URL is empty but configuration was triggered.");
-            }
-            
-            URI uri = new URI(databaseUrl);
+            URI uri = new URI(url);
             String userInfo = uri.getUserInfo();
             String host = uri.getHost();
             int port = uri.getPort();
             String path = uri.getPath();
 
-            if (userInfo == null || host == null) {
-                throw new URISyntaxException(databaseUrl, "Invalid database URL components (missing user info or host)");
+            String username = defaultUsername;
+            String password = defaultPassword;
+
+            if (userInfo != null) {
+                String[] userPass = userInfo.split(":");
+                username = userPass[0];
+                password = userPass.length > 1 ? userPass[1] : "";
             }
 
-            String[] userPass = userInfo.split(":");
-            String username = userPass[0];
-            String password = userPass.length > 1 ? userPass[1] : "";
-
-            // Build JDBC URL
             StringBuilder jdbcUrl = new StringBuilder("jdbc:postgresql://").append(host);
-            
-            if (port != -1) {
-                jdbcUrl.append(":").append(port);
-            }
-            
+            if (port != -1) jdbcUrl.append(":").append(port);
             jdbcUrl.append(path);
             
-            // Render specific: add sslmode=require if not present
             if (!jdbcUrl.toString().contains("?")) {
                 jdbcUrl.append("?sslmode=require");
             } else if (!jdbcUrl.toString().contains("sslmode")) {
                 jdbcUrl.append("&sslmode=require");
             }
 
-            logger.info("Generated JDBC URL successfully for host: {}", host);
+            logger.info("Generated PostgreSQL JDBC URL for host: {}", host);
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(jdbcUrl.toString());
             config.setUsername(username);
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
-            
-            // Optimized for free tier
-            config.setMaximumPoolSize(5); 
-            config.setMinimumIdle(1);
-            config.setIdleTimeout(30000);
-            config.setConnectionTimeout(30000);
-            config.setMaxLifetime(1800000);
-
+            config.setMaximumPoolSize(5);
             return new HikariDataSource(config);
         } catch (URISyntaxException e) {
-            logger.error("Failed to parse Database URL: {}", e.getMessage());
-            throw new RuntimeException("Invalid Database URL format", e);
+            throw new RuntimeException("Failed to parse PostgreSQL URL", e);
         }
+    }
+
+    private DataSource createDefaultDataSource(String url) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(defaultUsername);
+        config.setPassword(defaultPassword);
+        
+        if (url.contains("h2")) {
+            config.setDriverClassName("org.h2.Driver");
+        } else if (url.contains("postgresql")) {
+            config.setDriverClassName("org.postgresql.Driver");
+        }
+        
+        return new HikariDataSource(config);
     }
 }
