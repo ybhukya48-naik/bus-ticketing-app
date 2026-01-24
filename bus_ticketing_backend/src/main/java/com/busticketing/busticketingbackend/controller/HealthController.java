@@ -1,0 +1,19 @@
+package com.busticketing.busticketingbackend.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
+import java.util.Map;
+
+@RestController
+public class HealthController {
+
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> health() {
+        // Ultra-lightweight health check for Render
+        // Does not touch the database to ensure fast response during startup
+        return ResponseEntity.ok(Collections.singletonMap("status", "UP"));
+    }
+}
