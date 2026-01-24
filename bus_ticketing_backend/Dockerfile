@@ -34,4 +34,4 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # Use memory limits to prevent Render from killing the process
-ENTRYPOINT ["java", "-Xmx400m", "-Xms256m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx384m", "-Xms128m", "-jar", "app.jar"]

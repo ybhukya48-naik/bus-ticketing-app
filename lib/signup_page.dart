@@ -46,6 +46,18 @@ class _SignupPageState extends State<SignupPage> {
     }
 
     setState(() => _isLoading = true);
+    
+    // Show a snackbar after 10 seconds if still loading
+    final loadingTimer = Future.delayed(const Duration(seconds: 10), () {
+      if (_isLoading && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Server is waking up from sleep. This may take up to a minute...'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    });
 
     try {
       final AuthService authService = AuthService();

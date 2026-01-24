@@ -76,7 +76,7 @@ class AuthService {
         Uri.parse('$baseUrl/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': name, 'email': email, 'password': password}),
-      ).timeout(const Duration(seconds: 60)); // Increased to 60s for Render cold starts
+      ).timeout(const Duration(seconds: 90)); // Increased to 90s for Render cold starts + DB init
 
       debugPrint('Registration response status: ${response.statusCode}');
       debugPrint('Registration response body: ${response.body}');
