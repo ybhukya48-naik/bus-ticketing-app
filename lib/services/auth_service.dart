@@ -66,7 +66,7 @@ class AuthService {
         Uri.parse('$baseUrl/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': name, 'email': email, 'password': password}),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 60)); // Increased to 60s for Render cold starts
 
       debugPrint('Registration response status: ${response.statusCode}');
       debugPrint('Registration response body: ${response.body}');
@@ -74,11 +74,13 @@ class AuthService {
       if (response.statusCode == 200) {
         return null; // Success
       } else {
-        // Try to parse the error message from the response body
         return response.body;
       }
     } catch (e) {
       debugPrint('Registration error: $e');
+      if (e.toString().contains('TimeoutException')) {
+        return 'Server is taking too long to respond. It might be waking up. Please try again in a moment.';
+      }
       return 'Connection error: $e';
     }
   }
