@@ -15,17 +15,16 @@ COPY settings.gradle .
 # Download dependencies
 RUN ./gradlew dependencies --no-daemon
 
-# Copy source code and data
+# Copy source code
 COPY src src
 # Use wildcards safely to avoid build failure if files are missing
 COPY *.csv . 
-COPY src/main/resources/data.sql .
 
 # Build the application - skip tests to speed up and avoid DB connection issues during build
 RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Final stage
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy the jar from build stage
@@ -34,4 +33,5 @@ COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 
 # Use memory limits to prevent Render from killing the process
-ENTRYPOINT ["java", "-Xmx320m", "-Xms128m", "-jar", "app.jar"]
+# Render Free tier has 512MB RAM. Let's be conservative.
+ENTRYPOINT ["java", "-Xmx384m", "-Xms128m", "-jar", "app.jar"]
