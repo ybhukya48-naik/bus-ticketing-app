@@ -71,48 +71,34 @@ class AuthService {
 
   Future<String?> register(String name, String email, String password) async {
     int retryCount = 0;
-    const int maxRetries = 2;
-
-    while (retryCount <= maxRetries) {
+    const int maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
       try {
-        debugPrint('Attempting registration at: $baseUrl/register (Attempt ${retryCount + 1})');
         final response = await http.post(
           Uri.parse('$baseUrl/register'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
+          headers: {'Content-Type': 'application/json'},
           body: json.encode({'username': name, 'email': email, 'password': password}),
-        ).timeout(const Duration(seconds: 180));
+        ).timeout(const Duration(seconds: 45));
 
-        debugPrint('Registration response status: ${response.statusCode}');
-
-        if (response.statusCode == 200) {
-          return null; // Success
-        } else if (response.statusCode == 503 || response.statusCode == 504 || response.statusCode == 502) {
-          // Server is likely still waking up or busy
-          if (retryCount < maxRetries) {
-            retryCount++;
-            debugPrint('Server busy (Status ${response.statusCode}), retrying in 5 seconds...');
-            await Future.delayed(const Duration(seconds: 5));
-            continue;
-          }
+        if (response.statusCode == 201 || response.statusCode == 200) {
+          return null;
+        } else {
+          final errorData = json.decode(response.body);
+          return errorData['message'] ?? 'Registration failed';
         }
-        return response.body;
       } catch (e) {
-        debugPrint('Registration error: $e');
-        if (e.toString().contains('TimeoutException') || e.toString().contains('Connection failed')) {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            debugPrint('Connection timeout/failure, retrying in 5 seconds...');
-            await Future.delayed(const Duration(seconds: 5));
-            continue;
+        retryCount++;
+        if (retryCount >= maxRetries) {
+          if (e.toString().contains('TimeoutException')) {
+            return 'Server is still waking up. Please try again in a moment.';
           }
-          return 'Server is taking too long to respond. It might be waking up. Please wait another minute and try again.';
+          return 'Connection error: ${e.toString()}';
         }
-        return 'Connection error: $e';
+        // Wait a bit before retrying
+        await Future.delayed(Duration(seconds: 5 * retryCount));
       }
     }
-    return 'Failed after multiple attempts. Please try again in a few minutes.';
+    return 'Registration failed after multiple attempts';
   }
 }
