@@ -17,7 +17,14 @@ public class RootController {
     public Map<String, String> root() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
-        
+        response.put("message", "Bus Ticketing Backend is running");
+        response.put("version", "0.0.1-SNAPSHOT");
+        return response;
+    }
+
+    @GetMapping("/api/health/db")
+    public Map<String, String> dbHealth() {
+        Map<String, String> response = new HashMap<>();
         if (jdbcTemplate != null) {
             try {
                 jdbcTemplate.execute("SELECT 1");
@@ -26,9 +33,6 @@ public class RootController {
                 response.put("database", "ERROR: " + e.getMessage());
             }
         }
-        
-        response.put("message", "Bus Ticketing Backend is running");
-        response.put("version", "0.0.1-SNAPSHOT");
         return response;
     }
 }
