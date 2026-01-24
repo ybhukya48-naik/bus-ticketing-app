@@ -7,8 +7,6 @@ services:
     rootDir: bus_ticketing_backend
     healthCheckPath: /
     envVars:
-      - key: PORT
-        value: 8080
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: bus-ticketing-db
