@@ -42,6 +42,7 @@ public class DatabaseConfig {
 
     @Bean
     @Primary
+    @org.springframework.context.annotation.Lazy
     public DataSource dataSource() {
         logger.info("Initializing DataSource with URL: {}", databaseUrl);
         if (databaseUrl != null && databaseUrl.startsWith("postgres")) {

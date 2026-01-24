@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
+@org.springframework.context.annotation.Lazy
 public class HealthController {
 
     @GetMapping("/health")
