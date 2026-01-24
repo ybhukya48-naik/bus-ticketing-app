@@ -5,6 +5,7 @@ services:
     env: docker
     plan: free
     rootDir: bus_ticketing_backend
+    dockerfilePath: Dockerfile
     healthCheckPath: /
     envVars:
       - key: SPRING_DATASOURCE_URL
