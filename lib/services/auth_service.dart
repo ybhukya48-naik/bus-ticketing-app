@@ -8,6 +8,16 @@ import 'package:bus_ticketing_app/services/api_config.dart';
 class AuthService {
   final String baseUrl = '${ApiConfig.baseUrl}/auth'; // Updated for central config
 
+  Future<void> warmup() async {
+    try {
+      // Just a simple GET call to the root to wake up the server
+      await http.get(Uri.parse(ApiConfig.baseUrl.replaceAll('/api', '/'))).timeout(const Duration(seconds: 5));
+    } catch (e) {
+      // Ignore errors, we just want to trigger the wake-up
+      debugPrint('Warmup trigger sent (expected error if server is cold)');
+    }
+  }
+
   Future<bool> login(String username, String password) async {
 
     try {

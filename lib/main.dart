@@ -8,11 +8,15 @@ import 'package:bus_ticketing_app/map_screen.dart';
 import 'package:bus_ticketing_app/booking_history_screen.dart';
 import 'package:bus_ticketing_app/user_profile_screen.dart';
 import 'package:bus_ticketing_app/payment_screen.dart';
+import 'package:bus_ticketing_app/services/auth_service.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Start warming up the backend early
+  AuthService().warmup();
   
   try {
     Stripe.publishableKey = 'pk_test_TYu3EQhXgYy01sF23456789';
