@@ -15,9 +15,9 @@ class AuthService {
         Uri.parse('$baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': username, 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 30));
 
-
+      debugPrint('Login response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
