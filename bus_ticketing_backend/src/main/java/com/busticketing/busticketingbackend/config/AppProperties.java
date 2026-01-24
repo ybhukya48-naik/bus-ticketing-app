@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AppProperties {
 
     private String jwtSecret;
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
 
     public String getJwtSecret() {
         return jwtSecret;
@@ -16,11 +16,11 @@ public class AppProperties {
         this.jwtSecret = jwtSecret;
     }
 
-    public int getJwtExpirationMs() {
+    public long getJwtExpirationMs() {
         return jwtExpirationMs;
     }
 
-    public void setJwtExpirationMs(int jwtExpirationMs) {
+    public void setJwtExpirationMs(long jwtExpirationMs) {
         this.jwtExpirationMs = jwtExpirationMs;
     }
 }

@@ -23,11 +23,20 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
+  bool _isLoading = false;
+
   void _signup() async { // Made async
     final String name = _nameController.text.trim();
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
     final String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar( // Show user-friendly error
@@ -36,20 +45,33 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    final AuthService authService = AuthService();
-    String? error = await authService.register(name, email, password); // Call register method
+    setState(() => _isLoading = true);
 
-    if (!mounted) return;
+    try {
+      final AuthService authService = AuthService();
+      String? error = await authService.register(name, email, password); // Call register method
 
-    if (error == null) {
+      if (!mounted) return;
+
+      if (error == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration Successful! Please log in.')),
+        );
+        Navigator.pushReplacementNamed(context, '/'); // Navigate to login page
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration Failed: $error')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration Successful! Please log in.')),
+        SnackBar(content: Text('An error occurred: $e')),
       );
-      Navigator.pushReplacementNamed(context, '/'); // Navigate to login page
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration Failed: $error')),
-      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
