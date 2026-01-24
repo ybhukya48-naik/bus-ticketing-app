@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@org.springframework.context.annotation.Lazy
 public class RootController {
 
     @Autowired(required = false)

@@ -3,7 +3,7 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Set Gradle memory limits for Render free tier
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx512m'"
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx384m -XX:MaxMetaspaceSize=128m'"
 
 # Copy gradle files for caching
 COPY gradlew .

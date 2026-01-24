@@ -56,55 +56,53 @@ public class DatabaseConfig {
 
     private DataSource createPostgresDataSource(String url) {
         try {
-            // Remove postgres:// and split into parts
-            String cleanUrl = url.substring(11); // Skip "postgres://"
-            String[] userInfoHostPath = cleanUrl.split("@");
-            
-            String username = "";
-            String password = "";
-            String hostPath = "";
+            // Use URI for robust parsing of postgres:// or postgresql://
+            URI uri = new URI(url);
+            String userInfo = uri.getUserInfo();
+            String username = defaultUsername;
+            String password = defaultPassword;
 
-            if (userInfoHostPath.length > 1) {
-                String userInfo = userInfoHostPath[0];
-                hostPath = userInfoHostPath[1];
-                String[] userPass = userInfo.split(":");
-                username = userPass[0];
-                password = userPass.length > 1 ? userPass[1] : "";
-            } else {
-                hostPath = userInfoHostPath[0];
-                username = defaultUsername;
-                password = defaultPassword;
+            if (userInfo != null && userInfo.contains(":")) {
+                String[] parts = userInfo.split(":");
+                username = parts[0];
+                password = parts.length > 1 ? parts[1] : "";
             }
 
-            // Extract host, port, and database name from hostPath (e.g., host:port/dbname)
-            String[] hostPortDb = hostPath.split("/");
-            String hostPort = hostPortDb[0];
-            String dbName = hostPortDb.length > 1 ? hostPortDb[1] : "";
+            String host = uri.getHost();
+            int port = uri.getPort();
+            if (port == -1) port = 5432;
+            String path = uri.getPath();
+            String dbName = (path != null && path.length() > 1) ? path.substring(1) : "";
 
-            StringBuilder jdbcUrl = new StringBuilder("jdbc:postgresql://").append(hostPort).append("/").append(dbName);
+            StringBuilder jdbcUrl = new StringBuilder("jdbc:postgresql://")
+                    .append(host)
+                    .append(":")
+                    .append(port)
+                    .append("/")
+                    .append(dbName);
             
             // Render/Neon usually require SSL
-            if (!jdbcUrl.toString().contains("?")) {
+            if (uri.getQuery() == null || !uri.getQuery().contains("sslmode")) {
                 jdbcUrl.append("?sslmode=require");
             }
 
-            logger.info("Generated PostgreSQL JDBC URL: jdbc:postgresql://{}/{}", hostPort.split(":")[0], dbName);
+            logger.info("Generated PostgreSQL JDBC URL: jdbc:postgresql://{}:{}/{}", host, port, dbName);
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(jdbcUrl.toString());
             config.setUsername(username);
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
-            config.setMaximumPoolSize(Math.max(2, maxPoolSize)); // Ensure at least 2
+            config.setMaximumPoolSize(Math.max(2, maxPoolSize));
             config.setConnectionTimeout(connectionTimeout);
             config.setIdleTimeout(idleTimeout);
             config.setMaxLifetime(maxLifetime);
             config.setPoolName("BusTicketingHikariPool");
-            
+
             return new HikariDataSource(config);
-        } catch (Exception e) {
-            logger.error("Failed to parse PostgreSQL URL: {}. Falling back to default.", e.getMessage());
-            return createDefaultDataSource(databaseUrl);
+        } catch (URISyntaxException e) {
+            logger.error("Failed to parse DATABASE_URL: {}. Falling back to default.", url, e);
+            return createDefaultDataSource(url);
         }
     }
 

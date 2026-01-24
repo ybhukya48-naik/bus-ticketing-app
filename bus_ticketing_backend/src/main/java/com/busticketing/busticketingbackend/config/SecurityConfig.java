@@ -83,7 +83,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/api/auth/**").permitAll()
+                        auth.requestMatchers("/", "/health", "/api/health/**", "/api/auth/**").permitAll()
                                 .requestMatchers("/api/buses/**").permitAll()
                                 .requestMatchers("/api/stops/**").permitAll()
                                 .requestMatchers("/api/bus-stops/**").permitAll()
