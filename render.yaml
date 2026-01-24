@@ -22,6 +22,17 @@ services:
       - key: RAZORPAY_KEY_SECRET
         sync: false
 
+  # Frontend Flutter Web Service
+  - type: web
+    name: bus-ticketing-app-web
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile.web
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 80
+
 databases:
   - name: bus-ticketing-db
     plan: free
