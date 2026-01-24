@@ -28,6 +28,18 @@ public class DatabaseConfig {
     @Value("${SPRING_DATASOURCE_PASSWORD:}")
     private String defaultPassword;
 
+    @Value("${spring.datasource.hikari.maximum-pool-size:5}")
+    private int maxPoolSize;
+
+    @Value("${spring.datasource.hikari.connection-timeout:30000}")
+    private long connectionTimeout;
+
+    @Value("${spring.datasource.hikari.idle-timeout:30000}")
+    private long idleTimeout;
+
+    @Value("${spring.datasource.hikari.max-lifetime:600000}")
+    private long maxLifetime;
+
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -74,7 +86,10 @@ public class DatabaseConfig {
             config.setUsername(username);
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
-            config.setMaximumPoolSize(5);
+            config.setMaximumPoolSize(maxPoolSize);
+            config.setConnectionTimeout(connectionTimeout);
+            config.setIdleTimeout(idleTimeout);
+            config.setMaxLifetime(maxLifetime);
             return new HikariDataSource(config);
         } catch (URISyntaxException e) {
             throw new RuntimeException("Failed to parse PostgreSQL URL", e);
@@ -86,6 +101,10 @@ public class DatabaseConfig {
         config.setJdbcUrl(url);
         config.setUsername(defaultUsername);
         config.setPassword(defaultPassword);
+        config.setMaximumPoolSize(maxPoolSize);
+        config.setConnectionTimeout(connectionTimeout);
+        config.setIdleTimeout(idleTimeout);
+        config.setMaxLifetime(maxLifetime);
         
         if (url.contains("h2")) {
             config.setDriverClassName("org.h2.Driver");
