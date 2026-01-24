@@ -47,13 +47,35 @@ class _SignupPageState extends State<SignupPage> {
 
     setState(() => _isLoading = true);
     
-    // Show a snackbar after 10 seconds if still loading
-    final loadingTimer = Future.delayed(const Duration(seconds: 10), () {
+    // Show snackbars at intervals to keep the user informed
+    final timer1 = Future.delayed(const Duration(seconds: 10), () {
       if (_isLoading && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Server is waking up from sleep. This may take up to a minute...'),
             duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    });
+
+    final timer2 = Future.delayed(const Duration(seconds: 30), () {
+      if (_isLoading && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Still waiting for the server. It is taking longer than usual, please stay on this screen...'),
+            duration: Duration(seconds: 8),
+          ),
+        );
+      }
+    });
+
+    final timer3 = Future.delayed(const Duration(seconds: 60), () {
+      if (_isLoading && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Almost there! The server is nearly ready. Thank you for your patience.'),
+            duration: Duration(seconds: 10),
           ),
         );
       }
