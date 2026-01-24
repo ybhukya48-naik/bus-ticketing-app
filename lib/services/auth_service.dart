@@ -11,10 +11,10 @@ class AuthService {
   Future<void> warmup() async {
     try {
       // Just a simple GET call to the root to wake up the server
-      await http.get(Uri.parse(ApiConfig.baseUrl.replaceAll('/api', '/'))).timeout(const Duration(seconds: 5));
+      // Increased timeout for warmup to give it a better chance to complete
+      await http.get(Uri.parse(ApiConfig.baseUrl.replaceAll('/api', '/'))).timeout(const Duration(seconds: 30));
     } catch (e) {
-      // Ignore errors, we just want to trigger the wake-up
-      debugPrint('Warmup trigger sent (expected error if server is cold)');
+      debugPrint('Warmup trigger sent: $e');
     }
   }
 
@@ -70,28 +70,49 @@ class AuthService {
   }
 
   Future<String?> register(String name, String email, String password) async {
+    int retryCount = 0;
+    const int maxRetries = 2;
 
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'username': name, 'email': email, 'password': password}),
-      ).timeout(const Duration(seconds: 120)); // Increased to 120s for slow Render cold starts
+    while (retryCount <= maxRetries) {
+      try {
+        debugPrint('Attempting registration at: $baseUrl/register (Attempt ${retryCount + 1})');
+        final response = await http.post(
+          Uri.parse('$baseUrl/register'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: json.encode({'username': name, 'email': email, 'password': password}),
+        ).timeout(const Duration(seconds: 180));
 
-      debugPrint('Registration response status: ${response.statusCode}');
-      debugPrint('Registration response body: ${response.body}');
+        debugPrint('Registration response status: ${response.statusCode}');
 
-      if (response.statusCode == 200) {
-        return null; // Success
-      } else {
+        if (response.statusCode == 200) {
+          return null; // Success
+        } else if (response.statusCode == 503 || response.statusCode == 504 || response.statusCode == 502) {
+          // Server is likely still waking up or busy
+          if (retryCount < maxRetries) {
+            retryCount++;
+            debugPrint('Server busy (Status ${response.statusCode}), retrying in 5 seconds...');
+            await Future.delayed(const Duration(seconds: 5));
+            continue;
+          }
+        }
         return response.body;
+      } catch (e) {
+        debugPrint('Registration error: $e');
+        if (e.toString().contains('TimeoutException') || e.toString().contains('Connection failed')) {
+          if (retryCount < maxRetries) {
+            retryCount++;
+            debugPrint('Connection timeout/failure, retrying in 5 seconds...');
+            await Future.delayed(const Duration(seconds: 5));
+            continue;
+          }
+          return 'Server is taking too long to respond. It might be waking up. Please wait another minute and try again.';
+        }
+        return 'Connection error: $e';
       }
-    } catch (e) {
-      debugPrint('Registration error: $e');
-      if (e.toString().contains('TimeoutException')) {
-        return 'Server is taking too long to respond. It might be waking up. Please try again in a moment.';
-      }
-      return 'Connection error: $e';
     }
+    return 'Failed after multiple attempts. Please try again in a few minutes.';
   }
 }
