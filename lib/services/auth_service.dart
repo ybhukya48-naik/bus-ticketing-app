@@ -66,9 +66,10 @@ class AuthService {
         Uri.parse('$baseUrl/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': name, 'email': email, 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 30));
 
-
+      debugPrint('Registration response status: ${response.statusCode}');
+      debugPrint('Registration response body: ${response.body}');
 
       if (response.statusCode == 200) {
         return null; // Success
