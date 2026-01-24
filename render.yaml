@@ -26,3 +26,4 @@ databases:
     plan: free
     databaseName: bus_ticketing
     user: bus_admin
+    region: singapore
