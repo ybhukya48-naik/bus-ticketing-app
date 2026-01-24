@@ -158,7 +158,7 @@ class _SignupPageState extends State<SignupPage> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _signup,
+                      onPressed: _isLoading ? null : _signup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFD700),
                         foregroundColor: const Color(0xFF1A237E),
@@ -166,10 +166,12 @@ class _SignupPageState extends State<SignupPage> {
                         elevation: 8,
                         shadowColor: Colors.black26,
                       ),
-                      child: const Text(
-                        'SIGN UP',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
-                      ),
+                      child: _isLoading 
+                        ? const CircularProgressIndicator(color: Color(0xFF1A237E))
+                        : const Text(
+                            'SIGN UP',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                          ),
                     ),
                   ),
                   const SizedBox(height: 24.0),
