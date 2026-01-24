@@ -7,7 +7,7 @@ class ApiConfig {
   static const bool useLocalBackend = false;
 
   // Render Production URL
-  static const String _productionUrl = 'https://bus-ticketing-app-2xms.onrender.com/api';
+  static const String _productionUrl = 'https://bus-ticketing-backend.onrender.com/api';
   
   // Local Development URLs
   static const String _androidLocalUrl = 'http://10.0.2.2:8080/api';

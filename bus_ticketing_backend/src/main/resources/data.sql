@@ -528,7 +528,7 @@ INSERT INTO routes (id, route_name, origin, destination, distance) VALUES
 (2125, '113M/W', 'UPPAL', 'WAVE ROCK', 0.0),
 (2127, '113M/W', 'WAVEROCK', 'UPPAL', 0.0),
 (2142, '113M/K', 'UPPAL', 'LINGAMPALLY VIA KDP', 0.0)
-;
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO bus_stops (id, stop_name, latitude, longitude) VALUES
 (348, 'koti', 17.38471, 78.48426),
@@ -2095,7 +2095,8 @@ INSERT INTO bus_stops (id, stop_name, latitude, longitude) VALUES
 (1249, 'Ramnagar E Seva', 17.40915, 78.50884),
 (1423, 'katedan', 17.31213, 78.43855),
 (1427, 'NPA', 17.33085, 78.43746),
-(1431, 'Water Filter', 17.34104, 78.45035);
+(1431, 'Water Filter', 17.34104, 78.45035)
+ON CONFLICT (id) DO NOTHING;
 
 
 
@@ -2129,7 +2130,8 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (27, 'TS09UB3434', '113M/W', 40, 25, 'Uppal', 4.3, 40.0, '937,936,935,934,933,932,931,930,929,887,924,447,956,888,885,884,883,344,492,352,817,816,804,1065,803,802,920,1067,919,918,917,916,915,913,911,1064,910,909,1061,908,906,398'),
 (28, 'TS09UB5656', '10H', 40, 30, 'Secunderabad', 4.5, 25.0, '1574,1398,1399,1400,1401,1208,1209,1214,368,927,1402,1329,448,956,888,885,884,883,344,492,352,817,816,804,1065,803,802,920,1067,919,918,917,916,915,913,911,1064,910,909,1061,908,906,398,323'),
 (29, 'TS09UB7878', '90L', 40, 15, 'JBS', 4.2, 30.0, '1040,2105,813,1574,1398,1399,1400,1401,1208,1209,1214,368,927,1402,1329,448,956,888,885,884,883,344,492,352,817,816,804,1065,803,802,920,1067,919,918,917,916,915,913,911,1064,910,909,1061,908,906,398,959'),
-(30, 'TS09UB9090', '218L', 40, 10, 'Lingampally', 4.6, 35.0, '398,906,908,1061,909,910,1064,911,913,915,916,917,918,919,1067,920,802,803,1065,804,816,817,352,492,344,883,884,885,888,956,447,924,887,929,930,931,932,933,934,935,936,937,4001');
+(30, 'TS09UB9090', '218L', 40, 10, 'Lingampally', 4.6, 35.0, '398,906,908,1061,909,910,1064,911,913,915,916,917,918,919,1067,920,802,803,1065,804,816,817,352,492,344,883,884,885,888,956,447,924,887,929,930,931,932,933,934,935,936,937,4001')
+ON CONFLICT (id) DO NOTHING;
 
 
 -- Detailed route buses
@@ -2138,7 +2140,8 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (32, 'TS09UB1032', '47L', 40, 20, 'Station', 4.5, 30.0, '1574,1587,790,854,855,791,857,792,868,793,867,794,406,1047,374,334,314,332,331,317,318,319,320,321,322,324'),
 (33, 'TS09UB1033', '47L', 40, 20, 'Station', 4.5, 30.0, '324,325,489,326,1258,410,2242,329,316,315,578,405,373,490,806,1190,808,859,810,860,861,811,812,787'),
 (34, 'TS09UB1034', '10H', 40, 20, 'Station', 4.5, 30.0, '787,789,790,854,855,791,857,792,868,1063,1062,1060,1216,941,942,943,940,334,314,332,331,317,318,319,320,321,322,324'),
-(35, 'TS09UB1035', '10H', 40, 20, 'Station', 4.5, 30.0, '324,325,489,326,410,328,329,316,315,333,1055,974,975,976,977,978,979,877,1056,1057,1058,1059,809,859,810,860,861,1212,812,787');
+(35, 'TS09UB1035', '10H', 40, 20, 'Station', 4.5, 30.0, '324,325,489,326,410,328,329,316,315,333,1055,974,975,976,977,978,979,877,1056,1057,1058,1059,809,859,810,860,861,1212,812,787')
+ON CONFLICT (id) DO NOTHING;
 
 -- Automatically generated buses for remaining routes
 INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_location, rating, price, route_stops_order) VALUES
@@ -2265,7 +2268,8 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (220, 'TS09UB9701', '16H/47V', 40, 18, 'Ecil X Road', 4.1, 33.0, '1027,417'),
 (221, 'TS09UB3449', '16M', 40, 30, 'Malkajgiri', 4.8, 42.0, '2031,2084'),
 (222, 'TS09UB4383', '16M/5M', 40, 30, 'Malkajgiri', 4.2, 18.0, '2031,762'),
-(223, 'TS09UB4940', '90L/47L', 40, 16, 'Lb Nagar', 4.6, 50.0, '480,417');
+(223, 'TS09UB4940', '90L/47L', 40, 16, 'Lb Nagar', 4.6, 50.0, '480,417')
+ON CONFLICT (id) DO NOTHING;
 
 
 -- Automatically generated buses for remaining routes
@@ -2359,7 +2363,8 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (1086, 'TS09UB5883', '16A/47L', 40, 32, 'Waverock', 4.8, 27.0, '1266,1027'),
 (1087, 'TS09UB7941', '17HN', 40, 12, 'Secunderabad', 4.1, 18.0, '2084,1027'),
 (1088, 'TS09UB7984', '17H/10H', 40, 22, 'Ecil X Road', 4.8, 30.0, '1027,1266'),
-(1089, 'TS09UB5385', '17H/10H', 40, 8, 'Waverock', 4.3, 30.0, '1266,1027');
+(1089, 'TS09UB5385', '17H/10H', 40, 8, 'Waverock', 4.3, 30.0, '1266,1027')
+ON CONFLICT (id) DO NOTHING;
 
 -- Reset sequences for PostgreSQL IDENTITY columns after manual ID insertion
 -- SELECT setval(pg_get_serial_sequence('routes', 'id'), coalesce(max(id), 1)) FROM routes;
