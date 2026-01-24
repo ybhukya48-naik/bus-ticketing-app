@@ -5,7 +5,7 @@ services:
     env: docker
     plan: free
     rootDir: bus_ticketing_backend
-    healthCheckPath: /actuator/health
+    healthCheckPath: /
     envVars:
       - key: PORT
         value: 8080
