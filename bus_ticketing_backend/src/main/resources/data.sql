@@ -2098,8 +2098,6 @@ INSERT INTO bus_stops (id, stop_name, latitude, longitude) VALUES
 (1431, 'Water Filter', 17.34104, 78.45035)
 ON CONFLICT (id) DO NOTHING;
 
-
-
 INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_location, rating, price, route_stops_order) VALUES
 (1, 'TS09UB1234', '10H', 40, 25, 'Secunderabad', 4.5, 25.0, '1574,301,302,303,304,323'),
 (2, 'TS09UB5678', '222A', 40, 15, 'Koti', 4.2, 35.0, '348,301,302,303,304,4003,4002'),
@@ -2132,7 +2130,6 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (29, 'TS09UB7878', '90L', 40, 15, 'JBS', 4.2, 30.0, '1040,2105,813,1574,1398,1399,1400,1401,1208,1209,1214,368,927,1402,1329,448,956,888,885,884,883,344,492,352,817,816,804,1065,803,802,920,1067,919,918,917,916,915,913,911,1064,910,909,1061,908,906,398,959'),
 (30, 'TS09UB9090', '218L', 40, 10, 'Lingampally', 4.6, 35.0, '398,906,908,1061,909,910,1064,911,913,915,916,917,918,919,1067,920,802,803,1065,804,816,817,352,492,344,883,884,885,888,956,447,924,887,929,930,931,932,933,934,935,936,937,4001')
 ON CONFLICT (id) DO NOTHING;
-
 
 -- Detailed route buses
 INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_location, rating, price, route_stops_order) VALUES
@@ -2271,7 +2268,6 @@ INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_loc
 (223, 'TS09UB4940', '90L/47L', 40, 16, 'Lb Nagar', 4.6, 50.0, '480,417')
 ON CONFLICT (id) DO NOTHING;
 
-
 -- Automatically generated buses for remaining routes
 INSERT INTO buses (id, bus_number, route, capacity, available_seats, current_location, rating, price, route_stops_order) VALUES
 (1000, 'TS09UB2579', '127K', 40, 22, 'Koti', 4.1, 39.0, '348,324'),
@@ -2368,5 +2364,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Reset sequences for PostgreSQL IDENTITY columns after manual ID insertion
 -- SELECT setval(pg_get_serial_sequence('routes', 'id'), coalesce(max(id), 1)) FROM routes;
+
 -- SELECT setval(pg_get_serial_sequence('bus_stops', 'id'), coalesce(max(id), 1)) FROM bus_stops;
+
 -- SELECT setval(pg_get_serial_sequence('buses', 'id'), coalesce(max(id), 1)) FROM buses;
