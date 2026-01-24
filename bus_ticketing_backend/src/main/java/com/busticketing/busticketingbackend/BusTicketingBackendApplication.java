@@ -8,6 +8,7 @@ import com.busticketing.busticketingbackend.config.StripeProperties;
 import com.busticketing.busticketingbackend.config.RazorpayProperties;
 
 @SpringBootApplication
+@org.springframework.context.annotation.Lazy
 @EnableConfigurationProperties({AppProperties.class, StripeProperties.class, RazorpayProperties.class})
 public class BusTicketingBackendApplication {
 
