@@ -12,6 +12,8 @@ import com.busticketing.busticketingbackend.config.RazorpayProperties;
 public class BusTicketingBackendApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BusTicketingBackendApplication.class, args);
-    }
+		System.out.println("Starting Bus Ticketing Backend Application...");
+		SpringApplication.run(BusTicketingBackendApplication.class, args);
+		System.out.println("Application started successfully!");
+	}
 }
