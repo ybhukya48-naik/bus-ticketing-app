@@ -47,6 +47,95 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location services are disabled.')),
+      );
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return;
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location permissions are permanently denied.')),
+      );
+      return;
+    } 
+
+    setState(() => _isLoadingStops = true);
+    
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      
+      if (_allStops.isEmpty) {
+        await _fetchStops();
+      }
+
+      if (_allStops.isNotEmpty) {
+        BusStop? nearestStop;
+        double minDistance = double.infinity;
+
+        for (var stop in _allStops) {
+          double distance = _calculateDistance(
+            position.latitude, 
+            position.longitude, 
+            stop.latitude, 
+            stop.longitude
+          );
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearestStop = stop;
+          }
+        }
+
+        if (nearestStop != null) {
+          setState(() {
+            _sourceController.text = nearestStop!.stopName;
+          });
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Found nearest stop: ${nearestStop.stopName}')),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error getting location: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting location: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoadingStops = false);
+    }
+  }
+
   @override
   void dispose() {
     _sourceController.dispose();
@@ -132,6 +221,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: Icons.location_on_outlined,
                               iconColor: const Color(0xFF1A237E),
                               allStops: _allStops,
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.my_location, size: 20),
+                                onPressed: _getCurrentLocation,
+                                tooltip: 'Locate Me',
+                              ),
                             ),
                             const SizedBox(height: 20),
                             LocationField(
@@ -286,6 +380,7 @@ class LocationField extends StatefulWidget {
   final Color iconColor;
   final TextEditingController controller;
   final List<BusStop> allStops;
+  final Widget? suffixIcon;
 
   const LocationField({
     super.key,
@@ -294,6 +389,7 @@ class LocationField extends StatefulWidget {
     required this.iconColor,
     required this.controller,
     required this.allStops,
+    this.suffixIcon,
   });
 
   @override
@@ -334,6 +430,7 @@ class _LocationFieldState extends State<LocationField> {
             labelText: widget.label,
             labelStyle: TextStyle(color: Colors.grey[600]),
             prefixIcon: Icon(widget.icon, color: widget.iconColor),
+            suffixIcon: widget.suffixIcon,
             filled: true,
             fillColor: Colors.grey[50],
             border: OutlineInputBorder(
