@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Service
-@org.springframework.context.annotation.Lazy
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    @org.springframework.context.annotation.Lazy
     private UserRepository userRepository;
 
     @Override
