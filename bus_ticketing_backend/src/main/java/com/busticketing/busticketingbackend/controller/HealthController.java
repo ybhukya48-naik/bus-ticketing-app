@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 public class HealthController {
 
-    @GetMapping("/health")
+    @GetMapping({"/", "/health"})
     public ResponseEntity<Map<String, String>> health() {
         // Ultra-lightweight health check for Render
         // Does not touch the database to ensure fast response during startup

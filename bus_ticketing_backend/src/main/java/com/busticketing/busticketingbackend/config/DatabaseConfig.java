@@ -83,7 +83,11 @@ public class DatabaseConfig {
             
             // Render/Neon usually require SSL
             if (uri.getQuery() == null || !uri.getQuery().contains("sslmode")) {
-                jdbcUrl.append("?sslmode=require");
+                if (jdbcUrl.toString().contains("?")) {
+                    jdbcUrl.append("&sslmode=require");
+                } else {
+                    jdbcUrl.append("?sslmode=require");
+                }
             }
 
             logger.info("Generated PostgreSQL JDBC URL: jdbc:postgresql://{}:{}/{}", host, port, dbName);

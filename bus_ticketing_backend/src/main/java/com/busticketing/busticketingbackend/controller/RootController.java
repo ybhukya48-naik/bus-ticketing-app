@@ -13,7 +13,7 @@ public class RootController {
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 
-    @GetMapping("/")
+    @GetMapping("/api-info")
     public Map<String, String> root() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "UP");
