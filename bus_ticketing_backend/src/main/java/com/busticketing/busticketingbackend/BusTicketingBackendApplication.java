@@ -7,6 +7,9 @@ import com.busticketing.busticketingbackend.config.AppProperties;
 import com.busticketing.busticketingbackend.config.StripeProperties;
 import com.busticketing.busticketingbackend.config.RazorpayProperties;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+
 @SpringBootApplication
 @EnableConfigurationProperties({AppProperties.class, StripeProperties.class, RazorpayProperties.class})
 public class BusTicketingBackendApplication {
@@ -18,4 +21,11 @@ public class BusTicketingBackendApplication {
 		SpringApplication.run(BusTicketingBackendApplication.class, args);
 		System.out.println("Application started successfully!");
 	}
+
+    @Bean
+    public CommandLineRunner commandLineRunner() {
+        return args -> {
+            System.out.println("CommandLineRunner: App is fully up and running!");
+        };
+    }
 }

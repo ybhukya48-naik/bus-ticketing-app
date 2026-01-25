@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import jakarta.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableWebSecurity
+@org.springframework.context.annotation.Lazy
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -75,6 +77,11 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
         };
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/health", "/api/health/**", "/error");
     }
 
     @Bean
