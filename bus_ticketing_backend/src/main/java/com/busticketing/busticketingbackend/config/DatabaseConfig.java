@@ -93,10 +93,10 @@ public class DatabaseConfig {
             config.setUsername(username);
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
-            config.setMaximumPoolSize(Math.max(2, maxPoolSize));
-            config.setConnectionTimeout(connectionTimeout);
-            config.setIdleTimeout(idleTimeout);
-            config.setMaxLifetime(maxLifetime);
+            config.setMaximumPoolSize(1);
+            config.setConnectionTimeout(30000);
+            config.setIdleTimeout(10000);
+            config.setMaxLifetime(30000);
             config.setPoolName("BusTicketingHikariPool");
 
             return new HikariDataSource(config);
