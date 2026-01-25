@@ -24,7 +24,7 @@ COPY *.csv .
 RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Final stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the jar from build stage

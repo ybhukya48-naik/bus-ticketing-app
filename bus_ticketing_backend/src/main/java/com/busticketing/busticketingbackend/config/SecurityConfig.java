@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableWebSecurity
-@org.springframework.context.annotation.Lazy
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
