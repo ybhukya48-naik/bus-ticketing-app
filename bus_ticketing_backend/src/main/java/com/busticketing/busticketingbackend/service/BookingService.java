@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@org.springframework.context.annotation.Lazy
 public class BookingService {
 
     @Autowired
+    @org.springframework.context.annotation.Lazy
     private BookingRepository bookingRepository;
 
     public Booking createBooking(Booking booking) {

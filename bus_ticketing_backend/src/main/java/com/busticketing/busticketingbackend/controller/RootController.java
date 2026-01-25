@@ -10,8 +10,10 @@ import java.util.Map;
 @RestController
 public class RootController {
 
-    @Autowired(required = false)
-    private JdbcTemplate jdbcTemplate;
+    // Temporarily disabled to speed up startup
+    // @Autowired(required = false)
+    // @org.springframework.context.annotation.Lazy
+    // private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/api-info")
     public Map<String, String> root() {
@@ -25,14 +27,7 @@ public class RootController {
     @GetMapping("/api/health/db")
     public Map<String, String> dbHealth() {
         Map<String, String> response = new HashMap<>();
-        if (jdbcTemplate != null) {
-            try {
-                jdbcTemplate.execute("SELECT 1");
-                response.put("database", "CONNECTED");
-            } catch (Exception e) {
-                response.put("database", "ERROR: " + e.getMessage());
-            }
-        }
+        response.put("database", "CHECK_DISABLED");
         return response;
     }
 }

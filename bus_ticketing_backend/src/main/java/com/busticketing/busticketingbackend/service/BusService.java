@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@org.springframework.context.annotation.Lazy
 public class BusService {
 
     @Autowired
+    @org.springframework.context.annotation.Lazy
     private BusRepository busRepository;
 
     public List<Bus> getAllBuses() {

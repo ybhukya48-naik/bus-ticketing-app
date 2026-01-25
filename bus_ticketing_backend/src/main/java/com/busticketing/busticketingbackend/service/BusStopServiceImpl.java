@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@org.springframework.context.annotation.Lazy
 public class BusStopServiceImpl implements BusStopService {
 
     @Autowired
+    @org.springframework.context.annotation.Lazy
     private BusStopRepository busStopRepository;
 
     @Override
