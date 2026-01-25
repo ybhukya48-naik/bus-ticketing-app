@@ -8,12 +8,13 @@ import com.busticketing.busticketingbackend.config.StripeProperties;
 import com.busticketing.busticketingbackend.config.RazorpayProperties;
 
 @SpringBootApplication
-@org.springframework.context.annotation.Lazy
 @EnableConfigurationProperties({AppProperties.class, StripeProperties.class, RazorpayProperties.class})
 public class BusTicketingBackendApplication {
 
     public static void main(String[] args) {
 		System.out.println("Starting Bus Ticketing Backend Application...");
+		String port = System.getenv("PORT");
+		System.out.println("PORT environment variable: " + port);
 		SpringApplication.run(BusTicketingBackendApplication.class, args);
 		System.out.println("Application started successfully!");
 	}
