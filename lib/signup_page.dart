@@ -93,8 +93,19 @@ class _SignupPageState extends State<SignupPage> {
         );
         Navigator.pushReplacementNamed(context, '/'); // Navigate to login page
       } else {
+        // If it's a timeout, give specific advice
+        String userMessage = error;
+        if (error.contains('taking too long')) {
+          userMessage = 'Server is still waking up. Please wait 10 seconds and try again.';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration Failed: $error')),
+          SnackBar(
+            content: Text('Registration Failed: $userMessage'),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: _signup,
+            ),
+          ),
         );
       }
     } catch (e) {
