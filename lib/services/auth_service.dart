@@ -10,22 +10,21 @@ class AuthService {
 
   Future<void> warmup() async {
     try {
-      // Just a simple GET call to the root to wake up the server
-      // Increased timeout for warmup to give it a better chance to complete
-      await http.get(Uri.parse(ApiConfig.baseUrl.replaceAll('/api', '/'))).timeout(const Duration(seconds: 30));
+      // Waking up the server via the health check endpoint
+      final healthUrl = ApiConfig.baseUrl.replaceAll('/api', '/health');
+      await http.get(Uri.parse(healthUrl)).timeout(const Duration(seconds: 60));
     } catch (e) {
       debugPrint('Warmup trigger sent: $e');
     }
   }
 
   Future<bool> login(String username, String password) async {
-
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': username, 'password': password}),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 60));
 
       debugPrint('Login response status: ${response.statusCode}');
 
@@ -79,7 +78,7 @@ class AuthService {
           Uri.parse('$baseUrl/register'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'username': name, 'email': email, 'password': password}),
-        ).timeout(const Duration(seconds: 45));
+        ).timeout(const Duration(seconds: 90));
 
         if (response.statusCode == 201 || response.statusCode == 200) {
           return null;
