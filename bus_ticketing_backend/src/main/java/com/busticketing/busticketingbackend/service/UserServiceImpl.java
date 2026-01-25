@@ -9,11 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@org.springframework.context.annotation.Lazy
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    @org.springframework.context.annotation.Lazy
     private UserRepository userRepository;
 
     @Autowired
