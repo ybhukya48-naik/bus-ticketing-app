@@ -24,7 +24,7 @@ class AuthService {
         Uri.parse('$baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'username': username, 'password': password}),
-      ).timeout(const Duration(seconds: 60));
+      ).timeout(const Duration(seconds: 120));
 
       debugPrint('Login response status: ${response.statusCode}');
 
@@ -78,7 +78,7 @@ class AuthService {
           Uri.parse('$baseUrl/register'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'username': name, 'email': email, 'password': password}),
-        ).timeout(const Duration(seconds: 90));
+        ).timeout(const Duration(seconds: 120)); // Increased to 2 minutes
 
         if (response.statusCode == 201 || response.statusCode == 200) {
           return null;
@@ -88,14 +88,16 @@ class AuthService {
         }
       } catch (e) {
         retryCount++;
+        debugPrint('Registration attempt $retryCount failed: $e');
+        
         if (retryCount >= maxRetries) {
           if (e.toString().contains('TimeoutException')) {
-            return 'Server is still waking up. Please try again in a moment.';
+            return 'The server is taking too long to wake up. Please wait 30 seconds and try again.';
           }
-          return 'Connection error: ${e.toString()}';
+          return 'Connection error. Please check your internet or try again later.';
         }
-        // Wait a bit before retrying
-        await Future.delayed(Duration(seconds: 5 * retryCount));
+        // Exponentially wait a bit before retrying
+        await Future.delayed(Duration(seconds: 10 * retryCount));
       }
     }
     return 'Registration failed after multiple attempts';
