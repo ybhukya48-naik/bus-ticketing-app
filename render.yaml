@@ -24,6 +24,10 @@ services:
         sync: false
       - key: RAZORPAY_KEY_SECRET
         sync: false
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: JAVA_OPTS
+        value: -XX:+UseSerialGC -Xss512k -XX:MaxRAMPercentage=75.0 -XX:TieredStopAtLevel=1
 
   # Frontend Flutter Web Service
   - type: web

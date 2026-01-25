@@ -37,4 +37,4 @@ EXPOSE 8080
 # -XX:MaxRAMPercentage=75.0: Dynamically allocate memory based on container limit (512MB)
 # -Xss512k: Reduce thread stack size to save memory
 # -XX:TieredStopAtLevel=1: Faster startup by limiting JIT optimization
-ENTRYPOINT ["java", "-XX:+UseSerialGC", "-Xss512k", "-XX:MaxRAMPercentage=75.0", "-XX:TieredStopAtLevel=1", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseSerialGC", "-Xss512k", "-XX:MaxRAMPercentage=75.0", "-XX:TieredStopAtLevel=1", "-Djava.security.egd=file:/dev/./urandom", "-Dserver.port=${PORT}", "-jar", "app.jar"]
