@@ -81,8 +81,14 @@ public class DatabaseConfig {
                     .append("/")
                     .append(dbName);
             
-            // Render/Neon usually require SSL
-            if (uri.getQuery() == null || !uri.getQuery().contains("sslmode")) {
+            // Append existing query parameters if any
+            String query = uri.getQuery();
+            if (query != null && !query.isEmpty()) {
+                jdbcUrl.append("?").append(query);
+            }
+
+            // Ensure sslmode=require if not specified (required for Neon/Render)
+            if (query == null || !query.contains("sslmode")) {
                 if (jdbcUrl.toString().contains("?")) {
                     jdbcUrl.append("&sslmode=require");
                 } else {
