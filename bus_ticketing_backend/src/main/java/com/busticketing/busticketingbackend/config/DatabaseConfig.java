@@ -89,7 +89,7 @@ public class DatabaseConfig {
                 }
             }
 
-            logger.info("Generated PostgreSQL JDBC URL: jdbc:postgresql://{}:{}/{}", host, port, dbName);
+            logger.info("Generated PostgreSQL JDBC URL: {}", jdbcUrl.toString());
 
             HikariConfig config = new HikariConfig();
             config.setJdbcUrl(jdbcUrl.toString());
@@ -101,30 +101,30 @@ public class DatabaseConfig {
             config.setIdleTimeout(10000);
             config.setMaxLifetime(30000);
             config.setPoolName("BusTicketingHikariPool");
-
+            
+            logger.info("HikariCP configured. Attempting to create DataSource...");
             return new HikariDataSource(config);
-        } catch (URISyntaxException e) {
-            logger.error("Failed to parse DATABASE_URL: {}. Falling back to default.", url, e);
-            return createDefaultDataSource(url);
+        } catch (Exception e) {
+            logger.error("Error creating PostgreSQL DataSource: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to create PostgreSQL DataSource", e);
         }
     }
 
     private DataSource createDefaultDataSource(String url) {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(url);
-        config.setUsername(defaultUsername);
-        config.setPassword(defaultPassword);
-        config.setMaximumPoolSize(maxPoolSize);
-        config.setConnectionTimeout(connectionTimeout);
-        config.setIdleTimeout(idleTimeout);
-        config.setMaxLifetime(maxLifetime);
-        
-        if (url.contains("h2")) {
-            config.setDriverClassName("org.h2.Driver");
-        } else if (url.contains("postgresql")) {
-            config.setDriverClassName("org.postgresql.Driver");
+        try {
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(url);
+            config.setUsername(defaultUsername);
+            config.setPassword(defaultPassword);
+            config.setMaximumPoolSize(1);
+            config.setConnectionTimeout(30000);
+            config.setPoolName("H2HikariPool");
+            
+            logger.info("H2/Default HikariCP configured. Attempting to create DataSource...");
+            return new HikariDataSource(config);
+        } catch (Exception e) {
+            logger.error("Error creating default DataSource: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to create default DataSource", e);
         }
-        
-        return new HikariDataSource(config);
     }
 }
