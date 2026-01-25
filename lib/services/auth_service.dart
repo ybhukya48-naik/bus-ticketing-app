@@ -10,11 +10,23 @@ class AuthService {
 
   Future<void> warmup() async {
     try {
-      // Waking up the server via the health check endpoint
-      final healthUrl = ApiConfig.baseUrl.replaceAll('/api', '/health');
-      await http.get(Uri.parse(healthUrl)).timeout(const Duration(seconds: 60));
+      // Waking up the server AND database via the new warmup endpoint
+      final warmupUrl = '$baseUrl/warmup';
+      debugPrint('Sending warmup request to: $warmupUrl');
+      await http.get(Uri.parse(warmupUrl)).timeout(const Duration(seconds: 90));
+      debugPrint('Warmup successful');
     } catch (e) {
-      debugPrint('Warmup trigger sent: $e');
+      debugPrint('Warmup trigger sent (it might still be waking up): $e');
+    }
+  }
+
+  Future<bool> isServerReady() async {
+    try {
+      final warmupUrl = '$baseUrl/warmup';
+      final response = await http.get(Uri.parse(warmupUrl)).timeout(const Duration(seconds: 5));
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
     }
   }
 

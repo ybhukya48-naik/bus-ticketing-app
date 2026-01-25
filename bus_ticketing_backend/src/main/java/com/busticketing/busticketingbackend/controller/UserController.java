@@ -49,6 +49,19 @@ public class UserController {
         return "Backend is working!";
     }
 
+    @GetMapping("/warmup")
+    public ResponseEntity<String> warmup() {
+        logger.info("Warmup request received. Initializing database connection...");
+        try {
+            // This forces database and Hibernate initialization
+            userService.existsByUsername("warmup_ping");
+            return ResponseEntity.ok("Database connection warmed up");
+        } catch (Exception e) {
+            logger.warn("Warmup database check failed (this is normal if DB is still starting): {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Database still waking up");
+        }
+    }
+
     @PostMapping({"/register", "/signup"})
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
         logger.info("Received registration request for username: {}, email: {}", registerRequest.getUsername(), registerRequest.getEmail());
