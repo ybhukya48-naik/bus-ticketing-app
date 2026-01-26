@@ -79,29 +79,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/", "/health", "/api/health/**", "/error");
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 // CORS is handled by SimpleCorsFilter
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/health", "/api/health/**", "/api/auth/**").permitAll()
-                                .requestMatchers("/api/buses/**").permitAll()
-                                .requestMatchers("/api/stops/**").permitAll()
-                                .requestMatchers("/api/bus-stops/**").permitAll()
-                                .requestMatchers("/api/routes/**").permitAll()
+                        auth.requestMatchers("/", "/health", "/api/health/**", "/api/auth/**", "/error").permitAll()
+                                .requestMatchers("/api/buses/**", "/api/stops/**", "/api/bus-stops/**", "/api/routes/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                                .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
                 );
 
-        http.authenticationProvider(authenticationProvider());
+        // Spring Boot will automatically find the DaoAuthenticationProvider bean
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

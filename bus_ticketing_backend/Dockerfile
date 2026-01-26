@@ -30,7 +30,7 @@ WORKDIR /app
 # Copy the jar from build stage
 COPY --from=build /app/build/libs/*.jar app.jar
 
-EXPOSE 8080
+EXPOSE 10000
 
 # Use shell form to ensure environment variable substitution for $PORT
-ENTRYPOINT java -XX:+UseSerialGC -Xss512k -XX:MaxRAMPercentage=75.0 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-8080} -jar app.jar
+ENTRYPOINT java -XX:+UseSerialGC -Xss512k -XX:MaxRAMPercentage=75.0 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT:-10000} -jar app.jar
