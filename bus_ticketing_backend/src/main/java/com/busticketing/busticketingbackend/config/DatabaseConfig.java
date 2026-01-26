@@ -122,9 +122,9 @@ public class DatabaseConfig {
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
             config.setMaximumPoolSize(maxPoolSize > 0 ? maxPoolSize : 2);
-            config.setMinimumIdle(0);
+            config.setMinimumIdle(maxPoolSize > 0 ? maxPoolSize : 2); // Set same as max to avoid dynamic pool overhead on Free Tier
             config.setConnectionTimeout(connectionTimeout);
-            config.setIdleTimeout(idleTimeout);
+            // config.setIdleTimeout(idleTimeout); // Removed to avoid warning in fixed size pool
             config.setMaxLifetime(maxLifetime);
             config.setPoolName("BusTicketingHikariPool");
             
@@ -143,7 +143,7 @@ public class DatabaseConfig {
             config.setUsername(defaultUsername);
             config.setPassword(defaultPassword);
             config.setMaximumPoolSize(maxPoolSize > 0 ? maxPoolSize : 2);
-            config.setMinimumIdle(0);
+            config.setMinimumIdle(maxPoolSize > 0 ? maxPoolSize : 2); // Fixed size pool
             config.setConnectionTimeout(connectionTimeout);
             config.setPoolName("H2HikariPool");
             
