@@ -3,24 +3,27 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Set Gradle memory limits for Render free tier
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx384m -XX:MaxMetaspaceSize=128m'"
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs='-Xmx512m -XX:MaxMetaspaceSize=192m'"
 
 # Copy gradle files for caching
 COPY gradlew .
-RUN chmod +x gradlew
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 
+# Fix line endings in case they were changed on Windows and set permissions
+RUN apt-get update && apt-get install -y dos2unix && \
+    dos2unix gradlew && \
+    chmod +x gradlew
+
 # Download dependencies
 RUN ./gradlew dependencies --no-daemon
 
-# Copy source code
+# Copy source code and data
 COPY src src
-# Use wildcards safely to avoid build failure if files are missing
 COPY *.csv . 
 
-# Build the application - skip tests to speed up and avoid DB connection issues during build
+# Build the application - skip tests
 RUN ./gradlew clean bootJar -x test --no-daemon
 
 # Final stage
@@ -28,7 +31,9 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copy the jar from build stage
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/app.jar .
+# Copy CSV files to the final image so the app can find them at runtime
+COPY --from=build /app/*.csv ./
 
 EXPOSE 10000
 
