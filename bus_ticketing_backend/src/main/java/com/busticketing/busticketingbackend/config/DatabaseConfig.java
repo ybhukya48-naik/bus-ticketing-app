@@ -121,10 +121,11 @@ public class DatabaseConfig {
             config.setUsername(username);
             config.setPassword(password);
             config.setDriverClassName("org.postgresql.Driver");
-            config.setMaximumPoolSize(1);
-            config.setConnectionTimeout(30000);
-            config.setIdleTimeout(10000);
-            config.setMaxLifetime(30000);
+            config.setMaximumPoolSize(maxPoolSize > 0 ? maxPoolSize : 2);
+            config.setMinimumIdle(0);
+            config.setConnectionTimeout(connectionTimeout);
+            config.setIdleTimeout(idleTimeout);
+            config.setMaxLifetime(maxLifetime);
             config.setPoolName("BusTicketingHikariPool");
             
             logger.info("HikariCP configured. Attempting to create DataSource...");
@@ -141,8 +142,9 @@ public class DatabaseConfig {
             config.setJdbcUrl(url);
             config.setUsername(defaultUsername);
             config.setPassword(defaultPassword);
-            config.setMaximumPoolSize(1);
-            config.setConnectionTimeout(30000);
+            config.setMaximumPoolSize(maxPoolSize > 0 ? maxPoolSize : 2);
+            config.setMinimumIdle(0);
+            config.setConnectionTimeout(connectionTimeout);
             config.setPoolName("H2HikariPool");
             
             logger.info("H2/Default HikariCP configured. Attempting to create DataSource...");
