@@ -62,12 +62,11 @@ public class DatabaseConfig {
     @Bean
     @Primary
     public DataSource dataSource() {
-        logger.info("Initializing DataSource with URL: {}", databaseUrl);
-        if (databaseUrl != null && databaseUrl.startsWith("postgres")) {
-            logger.info("Detected postgres:// format. Converting to JDBC for PostgreSQL...");
+        if (databaseUrl != null && (databaseUrl.startsWith("postgres") || databaseUrl.startsWith("jdbc:postgresql"))) {
+            logger.info("Initializing PostgreSQL DataSource. URL detected: {}", databaseUrl.startsWith("postgres://") ? "postgres://***" : "jdbc:postgresql://***");
             return createPostgresDataSource(databaseUrl);
         } else {
-            logger.info("Using standard JDBC URL or H2 fallback: {}", databaseUrl);
+            logger.warn("No PostgreSQL URL detected (DATABASE_URL/SPRING_DATASOURCE_URL). Using H2/Default fallback: {}", databaseUrl);
             return createDefaultDataSource(databaseUrl);
         }
     }

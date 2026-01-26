@@ -17,7 +17,12 @@ public class BusTicketingBackendApplication {
     public static void main(String[] args) {
 		System.out.println("Starting Bus Ticketing Backend Application...");
 		String port = System.getenv("PORT");
-		System.out.println("PORT environment variable: " + port);
+		if (port != null && !port.isEmpty()) {
+			System.out.println("Detected PORT environment variable: " + port + ". Setting server.port property.");
+			System.setProperty("server.port", port);
+		} else {
+			System.out.println("No PORT environment variable detected, defaulting to 10000 via application.properties");
+		}
 		SpringApplication.run(BusTicketingBackendApplication.class, args);
 		System.out.println("Application started successfully!");
 	}

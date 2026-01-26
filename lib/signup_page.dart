@@ -96,13 +96,15 @@ class _SignupPageState extends State<SignupPage> {
         // If it's a timeout, give specific advice
         String userMessage = error;
         if (error.contains('taking too long')) {
-          userMessage = 'Server is still waking up. Please wait 10 seconds and try again.';
+          userMessage = 'Server is still waking up. Please click "Retry" below.';
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration Failed: $userMessage'),
+            content: Text(userMessage),
+            duration: const Duration(seconds: 10), // Give users time to read and act
             action: SnackBarAction(
               label: 'Retry',
+              textColor: Colors.yellow,
               onPressed: _signup,
             ),
           ),
@@ -111,7 +113,14 @@ class _SignupPageState extends State<SignupPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
+        SnackBar(
+          content: Text('An error occurred: $e'),
+          action: SnackBarAction(
+            label: 'Retry',
+            textColor: Colors.yellow,
+            onPressed: _signup,
+          ),
+        ),
       );
     } finally {
       if (mounted) {
